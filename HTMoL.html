@@ -1,0 +1,851 @@
+﻿<!--Licensed under the MIT license.
+http://www.opensource.org/licenses/mit-license.php
+
+this file is part of HTMoL:
+Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Vega Ramirez Adan -->
+<!DOCTYPE html> 
+<html>
+<head>
+    <title>HTMOL</title>
+    
+
+    <script src="http://code.jquery.com/jquery-1.9.0.js"></script>
+    <script src="js/TrackballControls.js"></script>
+    <script src="js/Process.js"></script>
+    <script src="js/Tools.js"></script>
+    <script src="js/Support.js"></script>
+    <script src="js/Main.js"> </script>
+    <script src='js/Menu.js'></script>
+
+    <script src='js/Shaders.js'></script>
+    <script src='js/plantilla_esfera.js'></script>
+    <script src='js/Buffers.js'></script>
+    <script src='js/Picking.js'></script>
+    <script src="js/glMatrix.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/Diffuses.js"></script>
+  
+
+    <link rel='stylesheet' href='styles/sizeHTMol.css' media='screen'>  
+
+    <script id="shader-fs" type="x-shader/x-fragment">
+    #ifdef GL_ES
+    precision highp float;
+    #endif
+
+    varying vec3 vTransformedNormal;
+    varying vec4 vPosition;
+
+    uniform vec3 uAmbientColor;
+
+    uniform bool uOffscreen;
+
+    uniform vec3 uPointLightingLocation;
+    uniform vec3 uPointLightingColor;
+
+    varying vec4 vColor;
+
+    void main(void) {
+
+        if (uOffscreen) 
+        {
+            gl_FragColor = vColor;
+            return;
+        }   
+        else
+        {
+         vec3 lightWeighting;
+            vec3 lightDirection = normalize(uPointLightingLocation - vPosition.xyz);
+
+            float directionalLightWeighting = max(dot(normalize(vTransformedNormal), lightDirection), 0.0);
+            lightWeighting = uAmbientColor + uPointLightingColor * directionalLightWeighting;
+            //gl_FragColor = vColor;
+            gl_FragColor = vec4(vColor.rgb * lightWeighting, vColor.a);
+        }
+    }
+</script>
+
+<script id="shader-vs" type="x-shader/x-vertex">
+    attribute vec3 aVertexPosition;
+    attribute vec3 aVertexNormal;
+    attribute vec4 aVertexColor;
+
+    uniform mat4 uMVMatrix;
+    uniform mat4 uPMatrix;
+    uniform mat3 uNMatrix;
+
+    uniform bool uOffscreen;
+
+    varying vec4 vColor;
+    varying vec3 vTransformedNormal;
+    varying vec4 vPosition;
+
+    void main(void) {
+        vPosition = uMVMatrix * vec4(aVertexPosition, 1.0);
+        gl_Position = uPMatrix * vPosition;
+
+
+ if (uOffscreen) 
+        {
+            vColor = aVertexColor;
+        }
+        else
+        {
+          vColor = aVertexColor;        
+        vTransformedNormal = uNMatrix * aVertexNormal;  
+        }
+        
+
+        //gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+        //vColor = aVertexColor;
+    }
+</script>
+
+
+
+
+    <script type="text/javascript">
+
+        ////////////////////////////7
+/*
+    var testArray=[];
+    testArray.push([1,2,3,4]);
+    testArray.push([5,6,7,8]);
+    alert(testArray[1]);
+    testArray[1].splice(0,1);
+    alert(testArray[1]);
+    alert(testArray[0]);*/
+/////////////////////////////
+
+    var gl;
+    var NoBloques=0;
+    var program;
+    var Cx,Cy,Cz;
+    var y=0;
+    var x=0;
+    var CameraPosition;
+    var ZoomMotion;
+
+    var contadores=0;
+
+    var NoPaso;
+
+    var SeleccionadoNumber=0;
+    var habiaSeleccionado=false;
+    var haySeleccionado=false;
+
+    var Representacion='SpheresBonds';
+    var AtomosSeleccionados=[];
+
+    var verArray=[];
+    var indexAlmacenado=[];
+     
+    var molecule;
+
+    var nVertices= 867;
+    //var nVertices= 48;
+    var nColor= 1156;
+    //var nColor= 64;
+    var nIndices= 1536; //se le suma 289 para hacer el offset 
+    //var nIndices= 54;
+
+    ///////////////////////estos radios son para las esferas CPK dependiendo del elemento
+    var radiusH = 1.2;
+    var rC_PB_TI_CA= 1.7;
+    var radiusN = 1.6;
+    var radiusO = 1.5;
+    var radiusS = 1.8;
+    var radiusP = 1.9;
+    var rDefault = 1.7;
+
+    ///////////////en estos arreglos se guardan los vértices para las demás plantillas de esferas CPK
+    var verArrayH=[];
+    var verArrayC_PB_TI_CA=[];
+    var verArrayN=[];
+    var verArrayO=[];
+    var verArrayS=[];
+    var verArrayP=[];
+    var verArrayDefault=[];
+    /////////////////////////////////////////
+
+    function initGL(canvas) {
+        try { 
+            gl = canvas.getContext("experimental-webgl")||canvas.getContext("webgl")||canvas.getContext("webkit-3d")||canvas.getContext("moz-webgl");
+            gl.viewportWidth = canvas.width;
+            gl.viewportHeight = canvas.height;
+        } catch (e) {
+        }
+        if (!gl) {
+            alert("Su visualizador no tiene soporte para WebGL");
+        }
+    }  
+    
+
+    var mvMatrix = mat4.create();
+    var mvMatrixStack = [];
+    var pMatrix = mat4.create();
+
+    function mvPushMatrix() {
+        var copy = mat4.create();
+        mat4.set(mvMatrix, copy);
+        mvMatrixStack.push(copy);
+    }
+
+    function mvPopMatrix() {
+        if (mvMatrixStack.length == 0) {
+            throw "Invalid popMatrix!";
+        }
+        mvMatrix = mvMatrixStack.pop();
+    }
+
+    function setMatrixUniforms() {
+        gl.uniformMatrix4fv(currentProgram.pMatrixUniform, false, pMatrix);
+        gl.uniformMatrix4fv(currentProgram.mvMatrixUniform, false, mvMatrix);
+
+        var normalMatrix = mat3.create();
+        mat4.toInverseMat3(mvMatrix, normalMatrix);
+        mat3.transpose(normalMatrix);
+        gl.uniformMatrix3fv(currentProgram.nMatrixUniform, false, normalMatrix);
+    }
+
+    function degToRad(degrees) {
+        return degrees * Math.PI / 180;
+    }
+
+
+    var mouseDown = false;
+    var lastMouseX = null;
+    var lastMouseY = null;
+
+    var RotationMatrix = mat4.create();
+    mat4.identity(RotationMatrix);
+
+    
+    function GetNumAtom(pix)
+    {
+        var NumAtom = 0;
+        NumAtom= pix[2]*255*255 + pix[1]*255 + pix[0];
+        return NumAtom;
+    }
+
+
+    //////////////////////////////////////////////// VARIABLES GLOBALES PARA COLORES REALES //////////////////////////////
+
+    //Para los bloques Solid
+    var sphereVertexPositionBuffer=[[]];
+    var sphereVertexNormalBuffer=[[]];
+    var sphereVertexIndexBuffer=[];
+    var sphereVertexColorBuffer=[];
+
+    var vertexPositionData = [[]];
+    var ColorTotal = [[]];
+    var indexData = [[]];
+    var normalDataN = [[]];
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //Para los bloques Wire
+    var sphereWirePositionBuffer=[[]];
+    var sphereWireNormalBuffer=[[]];
+    var sphereWireIndexBuffer=[];
+    var sphereWireColorBuffer=[];
+
+    var wirePositionData = [[]];
+    var wireColorTotal = [[]];
+    var wireindexData = [[]];
+    var wirenormalDataN = [[]];
+
+    //////////////////////////////////////////////// VARIABLES GLOBALES PARA COLORES DIFFUSOS //////////////////////////////
+    var sphereDifufusePositionBuffer=[];
+    var sphereDiffuseNormalBuffer=[];
+    var sphereDiffuseIndexBuffer=[];
+    var sphereVertexColorBufferDiffuse=[];
+
+    var vertexPositionDataD = [[]];
+    var indexDataD = [[]];
+    var normalDataND= [[]];
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   
+
+
+    var normalData = [];
+
+    
+/////////////////////////////////////////////////
+
+    var latitudeBands = 16;
+    var longitudeBands = 16;
+    var radius = 0.2;
+
+    var NBW=0; 
+    var NBS=0;
+    var LstBW=[]; 
+    var LstBS=[];
+
+    var verticesLineas = [];
+
+
+    function drawScene(diffuse) 
+    {
+        gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 1000.0, pMatrix);
+       
+        currentProgram = perFragmentProgram;
+        gl.useProgram(currentProgram);
+
+        gl.uniform1i(currentProgram.useLightingUniform, 1);        
+        gl.uniform3f(currentProgram.ambientColorUniform,0.2,0.2,0.2);
+        gl.uniform3f(currentProgram.pointLightingLocationUniform,0.0,0.0,0.0);
+        gl.uniform3f(currentProgram.pointLightingColorUniform,0.8,0.8,0.8);       
+
+        mat4.identity(mvMatrix);
+
+        mat4.translate(mvMatrix, [x, y, -CameraPosition]);
+
+        mat4.multiply(mvMatrix, RotationMatrix);
+
+
+        if(trjbnd && autoplay) //trjbnd y autoplay están declaradas en el Main   
+        {
+            var apuntador=0;
+            var NoAtomos = molecule.LstAtoms.length;
+    var Restantes = NoAtomos - ((NoBloques-1) * NoPaso);
+            if((pos*molecule.LstAtoms.length)==coordsX.length && bndbuffer==0)
+            {
+                bndbuffer=1;
+                pos=0;
+            }
+            else if((pos*molecule.LstAtoms.length)==coordsX1.length && bndbuffer==1)
+            {
+                bndbuffer=0;
+                pos=0;
+            }
+            //alert(molecule.LstAtoms.length);
+            if (NoBloques==1) 
+    {
+
+        //para limpiarlos
+        vertexPositionData[0]=[];
+
+        for(var i=0; i<NoAtomos; i++)
+        {       
+
+            //la molecula tiene la lista de átomos en orden, entonces lo recorro con los i
+                    var atom = molecule.LstAtoms[i];
+                    
+                    //lo unico que va a cambiar es el buffer de posiciones VertexPosition
+                    //alert(coordsX[molecule.LstAtoms.length*pos+i]);
+                    var s=molecule.LstAtoms.length*pos+i;
+
+                if(bndbuffer==0)
+                {                   
+                    for (var z=0; z<verArray.length;) 
+                    {    
+                    vertexPositionData[0].push(verArray[z]   + coordsX[s] -Cx);
+                    vertexPositionData[0].push(verArray[z+1] + coordsY[s] -Cy);
+                    vertexPositionData[0].push(verArray[z+2] + coordsZ[s] -Cz);    
+                                   
+                    z=z+3;
+                    }   
+                    //alert("vertex"+vertexPositionData[atom.BloqueSolid-1].length);      
+               
+                }
+                else
+                {
+                    for (var z=0; z<verArray.length;) 
+                    {    
+                    vertexPositionData[0].push(verArray[z]   + coordsX1[s] -Cx);
+                    vertexPositionData[0].push(verArray[z+1] + coordsY1[s] -Cy);
+                    vertexPositionData[0].push(verArray[z+2] + coordsZ1[s] -Cz);  
+                                   
+                    z=z+3;
+                    }      
+                       
+                }          
+           
+            apuntador=apuntador+1;
+
+                //-----------------------------------------------------------------------------------------------------
+        }
+
+        ///////////////////////////////////////// COLORES REALES ///////////////////////////////////////////////
+
+        sphereVertexPositionBuffer[0] = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[0]);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[0]), gl.DYNAMIC_DRAW);
+        sphereVertexPositionBuffer[0].itemSize = 3;
+        sphereVertexPositionBuffer[0].numItems = (vertexPositionData[0].length / 3) * 1;
+        //alert("vertices: "+ vertexPositionData[0].length);
+
+
+    }
+    else
+    {
+        for(var i=0; i<NoBloques; i++)
+        {           
+          
+            vertexPositionData[i]=[];
+
+            if (i==NoBloques-1) //esto es que llegó al último
+            {
+                for(var j=0; j<Restantes; j++)
+                {
+
+                   //la molecula tiene la lista de átomos en orden, entonces lo recorro con los i
+                    var atom = molecule.LstAtoms[apuntador];
+                    
+                    //lo unico que va a cambiar es el buffer de posiciones VertexPosition
+                    //alert(coordsX[molecule.LstAtoms.length*pos+i]);
+                    var s=molecule.LstAtoms.length*pos+apuntador;
+
+                if(bndbuffer==0)
+                {                   
+                    for (var z=0; z<verArray.length;) 
+                    {    
+                    vertexPositionData[i].push(verArray[z]   + coordsX[s] -Cx);
+                    vertexPositionData[i].push(verArray[z+1] + coordsY[s] -Cy);
+                    vertexPositionData[i].push(verArray[z+2] + coordsZ[s] -Cz);    
+                                   
+                    z=z+3;
+                    }   
+                    //alert("vertex"+vertexPositionData[atom.BloqueSolid-1].length);      
+               
+                }
+                else
+                {
+                    for (var z=0; z<verArray.length;) 
+                    {    
+                    vertexPositionData[i].push(verArray[z]   + coordsX1[s] -Cx);
+                    vertexPositionData[i].push(verArray[z+1] + coordsY1[s] -Cy);
+                    vertexPositionData[i].push(verArray[z+2] + coordsZ1[s] -Cz);  
+                                   
+                    z=z+3;
+                    }      
+                       
+                }          
+                   
+                    apuntador=apuntador+1;
+
+                    //---------------------------------------------------------------------------------------------------------
+                }
+             
+                sphereVertexPositionBuffer[i] = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[i]);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[i]), gl.DYNAMIC_DRAW);
+                sphereVertexPositionBuffer[i].itemSize = 3;
+                sphereVertexPositionBuffer[i].numItems = (vertexPositionData[i].length / 3) * 1;
+
+            //////////////////////
+            }
+            else
+            {
+                for (var j=0; j <NoPaso; j++) 
+                {
+                  
+                    //la molecula tiene la lista de átomos en orden, entonces lo recorro con los i
+                    var atom = molecule.LstAtoms[apuntador];
+                    
+                    //lo unico que va a cambiar es el buffer de posiciones VertexPosition
+                    //alert(coordsX[molecule.LstAtoms.length*pos+i]);
+                    var s=molecule.LstAtoms.length*pos+apuntador;
+
+                    if(bndbuffer==0)
+                    {                   
+                        for (var z=0; z<verArray.length;) 
+                        {    
+                        vertexPositionData[i].push(verArray[z]   + coordsX[s] -Cx);
+                        vertexPositionData[i].push(verArray[z+1] + coordsY[s] -Cy);
+                        vertexPositionData[i].push(verArray[z+2] + coordsZ[s] -Cz);    
+                                       
+                        z=z+3;
+                        }   
+                        //alert("vertex"+vertexPositionData[atom.BloqueSolid-1].length);      
+                   
+                    }
+                    else
+                    {
+                        for (var z=0; z<verArray.length;) 
+                        {    
+                        vertexPositionData[i].push(verArray[z]   + coordsX1[s] -Cx);
+                        vertexPositionData[i].push(verArray[z+1] + coordsY1[s] -Cy);
+                        vertexPositionData[i].push(verArray[z+2] + coordsZ1[s] -Cz);  
+                                       
+                        z=z+3;
+                        }      
+                           
+                    }          
+                    apuntador=apuntador+1;
+
+                        //---------------------------------------------------------------------------------------------------
+                }
+
+
+                sphereVertexPositionBuffer[i] = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[i]);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[i]), gl.DYNAMIC_DRAW);
+                sphereVertexPositionBuffer[i].itemSize = 3;
+                sphereVertexPositionBuffer[i].numItems = (vertexPositionData[i].length / 3) * 1;
+            
+            }
+        }
+    }
+            //console.log("sale");
+         
+            framecounter(numframe+1);
+
+            if(numframe<parseInt(totalframes)-1)
+            {
+                numframe++;
+                pos++;
+            }
+            else if(bndfinal==true)
+            {
+                var button=document.getElementById("playpause");
+                button.value="Play";
+                trjbnd=false;
+                numframe=0;
+                requireddata=false;
+                totalframes1=totalframes;
+                totalframes=0;
+                pos=0;
+                sizeglob=0;
+                readend=4999999;
+                readstart=0;
+                bndbuffer=0;
+                sizearrayp=0;
+                coordsX= new Float32Array();
+                coordsX1=new Float32Array();
+                coordsY= new Float32Array();
+                coordsY1=new Float32Array();    
+                coordsZ= new Float32Array();
+                coordsZ1=new Float32Array();
+                bndreview = true;
+            }
+ 
+            for(var i=0; i<NBS; i++) //colores reales
+                {              
+                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[i]);
+                    gl.vertexAttribPointer(currentProgram.vertexPositionAttribute, sphereVertexPositionBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBuffer[i]);
+                    gl.vertexAttribPointer(currentProgram.textureCoordAttribute, sphereVertexColorBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                   
+                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexNormalBuffer[i]);
+                    gl.vertexAttribPointer(currentProgram.vertexNormalAttribute, sphereVertexNormalBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
+
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereVertexIndexBuffer[i]);
+                    setMatrixUniforms();
+                    gl.drawElements(gl.TRIANGLES, sphereVertexIndexBuffer[i].numItems, gl.UNSIGNED_SHORT, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                   
+                }
+
+        }
+
+        else
+        {
+            if (diffuse) 
+            {
+                for(var i=0; i<NoBloques; i++)
+                {
+                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereDifufusePositionBuffer[i]);
+                    gl.vertexAttribPointer(currentProgram.vertexPositionAttribute, sphereDifufusePositionBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
+                    
+                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBufferDiffuse[i]);
+                    gl.vertexAttribPointer(currentProgram.textureCoordAttribute, sphereVertexColorBufferDiffuse[i].itemSize, gl.FLOAT, false, 0, 0);
+                  
+                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereDiffuseNormalBuffer[i]);
+                    gl.vertexAttribPointer(currentProgram.vertexNormalAttribute, sphereDiffuseNormalBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
+
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereDiffuseIndexBuffer[i]);
+                    setMatrixUniforms();
+                    gl.drawElements(gl.TRIANGLES, sphereDiffuseIndexBuffer[i].numItems, gl.UNSIGNED_SHORT, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                }
+
+            }
+            else
+            {        
+                for(var i=0; i<NBS; i++) //colores reales
+                {              
+                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[i]);
+                    gl.vertexAttribPointer(currentProgram.vertexPositionAttribute, sphereVertexPositionBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBuffer[i]);
+                    gl.vertexAttribPointer(currentProgram.textureCoordAttribute, sphereVertexColorBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                   
+                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexNormalBuffer[i]);
+                    gl.vertexAttribPointer(currentProgram.vertexNormalAttribute, sphereVertexNormalBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
+
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereVertexIndexBuffer[i]);
+                    setMatrixUniforms();
+                    gl.drawElements(gl.TRIANGLES, sphereVertexIndexBuffer[i].numItems, gl.UNSIGNED_SHORT, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                   
+                }
+                if (haySeleccionado) 
+                {
+                    for(var i=0; i<NBW; i++)
+                    {
+                        //se pinta el objeto seleccionado de wireframe
+                        gl.bindBuffer(gl.ARRAY_BUFFER, sphereWirePositionBuffer[i]);
+                        gl.vertexAttribPointer(currentProgram.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
+
+                        gl.bindBuffer(gl.ARRAY_BUFFER, sphereWireColorBuffer[i]);
+                        gl.vertexAttribPointer(currentProgram.textureCoordAttribute, 4, gl.FLOAT, false, 0, 0);
+
+                        gl.bindBuffer(gl.ARRAY_BUFFER, sphereWireNormalBuffer[i]);
+                        gl.vertexAttribPointer(currentProgram.vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
+                        
+                        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereWireIndexBuffer[i]);
+                        setMatrixUniforms();
+                        gl.drawElements(gl.LINES, sphereWireIndexBuffer[i].numItems, gl.UNSIGNED_SHORT, 0);
+
+                    }
+                                    
+                }
+
+                 //////////////////////////////////////////////////////////////////lineas
+                    gl.bindBuffer(gl.ARRAY_BUFFER, colorVertexBuffer);
+                    gl.vertexAttribPointer(currentProgram.textureCoordAttribute, colorVertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, lineNormalBuffer);
+                    gl.vertexAttribPointer(currentProgram.vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
+                    
+                    gl.bindBuffer(gl.ARRAY_BUFFER, lineVertexPositionBuffer);
+                    gl.vertexAttribPointer(currentProgram.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
+                    setMatrixUniforms();
+                    gl.drawArrays(gl.LINES, 0, lineVertexPositionBuffer.numItems);
+
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            }
+
+
+
+
+        }
+
+    }
+
+     function framecounter(frame)
+            {        
+                if(bndknowframe==true)
+                {
+                    totalframes=sizeglob/molecule.LstAtoms.length;
+                    data.innerHTML="frame " + (frame) + "(" + parseInt((frame*100)/totalframes1) +  "%) of " + parseInt(totalframes1);
+                }
+                else
+                {
+                    totalframes=sizeglob/ObjThis.tatoms.length;
+                    data.innerHTML="frame " + (frame) + " of " + parseInt(totalframes);
+                }        
+            }
+
+
+    function tick() {
+        requestAnimFrame(tick);
+     
+            drawScene(0);
+
+        
+    }
+
+
+    function zoomin() {
+        return function (event){
+        CameraPosition=CameraPosition-ZoomMotion;
+        y=y-.1;
+        drawScene(0);
+        }
+    }
+
+    function zoomout() {
+        return function (event){
+        CameraPosition=CameraPosition+ZoomMotion;
+        y=y+.1;
+        drawScene(0);
+        }
+    }
+
+    function PauseTraj()
+    {
+        return function (event)
+        {
+            var button=document.getElementById("playpause");
+           
+            if(!autoplay)
+            {
+                //alert("autoplay diferent");
+                //alert(trjbnd);
+                autoplay=true;
+            }
+            else
+            {
+                trjbnd = !trjbnd;
+                
+                if (trjbnd) 
+                {
+                    //alert("Pause");
+                    button.value="Pause";
+                }
+                else
+                {
+                    //alert("Play");
+                    button.value="Play";
+                }
+            }
+        }
+    }
+
+
+    function webGLStart() {
+
+        //alert(8888888778);
+        var canvas = document.getElementById("canvas"); 
+        canvas.width=window.innerWidth;
+        canvas.height=window.innerHeight;
+        initGL(canvas);
+        initShaders();
+        initPlantillaEsfera();
+        initBuffers();
+
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        gl.enable(gl.DEPTH_TEST);
+
+        canvas.onmousedown = handleMouseDown;
+        document.onmouseup = handleMouseUp;
+        document.onmousemove = handleMouseMove;
+
+        var data=document.getElementById('zoom');
+        var button;
+
+        button = document.createElement( 'input' );
+        button.value = 'Pause';
+        button.type="button";
+        button.style.fontSize = "15px";
+        button.id="playpause";
+        button.style.display="none"
+        button.onclick=PauseTraj();
+        zoom.appendChild( button );
+
+
+        button = document.createElement( 'input' );
+        button.value = '+';
+        button.type="button";
+        button.style.fontSize = "15px";
+        button.onclick=zoomin();
+        data.appendChild( button );
+
+        button = document.createElement( 'input' );
+        button.value = '-';
+        button.type="button";
+        button.style.fontSize = "15px";
+        button.onclick=zoomout();
+        data.appendChild( button );
+     
+
+        tick();
+    }
+
+
+
+        var coordsX= new Float32Array();
+        var coordsX1= new Float32Array();
+        var coordsY= new Float32Array();
+        var coordsY1=new Float32Array();
+    	var coordsZ= new Float32Array();
+    	var coordsZ1=new Float32Array();
+        var nav = navigator.userAgent.toLowerCase();
+        if(nav.indexOf("msie") != -1){
+        console.log("Estas visitandome desde IE");
+    } else if(nav.indexOf("firefox") != -1){
+        console.log("Estas visitandome desde Firefox");
+    } else if(nav.indexOf("opera") != -1){
+        console.log("Estas visitandome desde Opera");
+    } else if(nav.indexOf("chrome") != -1){
+        console.log("Estas visitandome desde Chrome");
+    } else {
+        console.log("Desconosco el navegador del que me visitas");
+    }
+        window.onload = function(){
+
+        if (typeof(Worker)=="undefined"){
+            alert("Workers no soportados");
+        } else {
+            //Para modificar worker1.js y evitar caché
+            var marcaTime = parseInt(Math.random() * 1000000);
+            worker1 = new Worker("js/worker.js?=" + marcaTime);
+            worker1.postMessage = worker1.webkitPostMessage || worker1.postMessage;
+            worker1.addEventListener("message", manejadorEventoWorker1, false);
+        }
+
+        
+    };
+
+
+    function manejadorEventoWorker1(event){
+            if(event.data.cmd=="enviar"){
+                var anter=sizeglob;
+                var datanter;
+                sizeglob+=event.data.dato.length;
+                if(event.data.bndarray){
+                    var anter1=sizearrayp;
+                    sizearrayp+=event.data.dato.length;
+                    datanter=coordsX;
+                    coordsX = new Float32Array(sizearrayp); 
+                    coordsX.set(datanter,0);
+                    coordsX.set(event.data.dato,anter1);
+                    datanter=coordsY;
+                    coordsY = new Float32Array(sizearrayp); 
+                    coordsY.set(datanter,0);
+                    coordsY.set(event.data.dato1,anter1);
+                    datanter=coordsZ;
+                    coordsZ = new Float32Array(sizearrayp); 
+                    coordsZ.set(datanter,0);
+                    coordsZ.set(event.data.dato2,anter1);
+                }else{
+                    var anter1=sizearrayp;
+                    sizearrayp+=event.data.dato.length;
+                    datanter=coordsX1;
+                    coordsX1 = new Float32Array(sizearrayp);
+                    coordsX1.set(datanter,0);
+                    coordsX1.set(event.data.dato,anter1); 
+                    datanter=coordsY1;
+                    coordsY1 = new Float32Array(sizearrayp); 
+                    coordsY1.set(datanter,0);
+                    coordsY1.set(event.data.dato1,anter1);
+                    datanter=coordsZ1;
+                    coordsZ1 = new Float32Array(sizearrayp); 
+                    coordsZ1.set(datanter,0);
+                    coordsZ1.set(event.data.dato2,anter1);
+                }
+            }else if(event.data.cmd=="endfinal"){
+			bndfinal=true;
+	    }else{
+              requireddata=true;  
+              readstart=readend-event.data.wast; 
+              readend=readstart+4999999; 
+            }
+
+    }
+
+ 
+    </script>
+</head>
+<body   onload="webGLStart();">
+<div id="Contenedor"> 
+
+<div id='data'></div>
+<div id="WebGL-Out"  style="height:0px;"></div> <!-- not change value -->
+<canvas id="canvas" > <!-- not change value -->
+<div id='zoom'></div>
+
+</div>
+</body>
+   
+</html> 
