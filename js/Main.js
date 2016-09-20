@@ -29,9 +29,26 @@ var fpath;
 
 function Main()
 {
+
+	//-----------------------------------Bloque inicial para declarar el worker----------------------------------
+	if (typeof(Worker)=="undefined")
+	{
+        alert("Workers no soportados");
+    } 
+    else 
+    {
+        //Para modificar worker1.js y evitar caché
+        var marcaTime = parseInt(Math.random() * 1000000);
+        worker1 = new Worker("js/worker.js?=" + marcaTime);
+        worker1.postMessage = worker1.webkitPostMessage || worker1.postMessage;
+        worker1.addEventListener("message", manejadorEventoWorker1, false);
+    }
+    //----------------------------------------------------------------------------------------------------------------
+        
 	var main=this;
 	this.ObjP= new Process();
 
+	//--------------------------Este bloque se va a crear en una función ya que aquí se lee el archivo pdb con la ruta dada-------------------
 	molecule=this.ObjP.ReadFile("1crn.pdb");
 
       var bond= new Bond();
@@ -60,8 +77,9 @@ function Main()
                        }
                  }
             }
+    //--------------------------------------------------------------------------------------------------------------------------------------------------
 
-      AtomosSeleccionados=molecule.LstAtoms;
+    AtomosSeleccionados=molecule.LstAtoms;
 
 	//this.Obj3D= new THREED(ObjRepresentation,main,main.ObjP);
 

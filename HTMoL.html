@@ -305,12 +305,11 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
 
         mat4.multiply(mvMatrix, RotationMatrix);
 
-
         if(trjbnd && autoplay) //trjbnd y autoplay están declaradas en el Main   
         {
             var apuntador=0;
             var NoAtomos = molecule.LstAtoms.length;
-    var Restantes = NoAtomos - ((NoBloques-1) * NoPaso);
+            var Restantes = NoAtomos - ((NoBloques-1) * NoPaso);
             if((pos*molecule.LstAtoms.length)==coordsX.length && bndbuffer==0)
             {
                 bndbuffer=1;
@@ -323,140 +322,28 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
             }
             //alert(molecule.LstAtoms.length);
             if (NoBloques==1) 
-    {
+            {
 
-        //para limpiarlos
-        vertexPositionData[0]=[];
+                //para limpiarlos
+                vertexPositionData[0]=[];
 
-        for(var i=0; i<NoAtomos; i++)
-        {       
+                for(var i=0; i<NoAtomos; i++)
+                {       
 
-            //la molecula tiene la lista de átomos en orden, entonces lo recorro con los i
+                    //la molecula tiene la lista de átomos en orden, entonces lo recorro con los i
                     var atom = molecule.LstAtoms[i];
                     
                     //lo unico que va a cambiar es el buffer de posiciones VertexPosition
                     //alert(coordsX[molecule.LstAtoms.length*pos+i]);
                     var s=molecule.LstAtoms.length*pos+i;
 
-                if(bndbuffer==0)
-                {                   
-                    for (var z=0; z<verArray.length;) 
-                    {    
-                    vertexPositionData[0].push(verArray[z]   + coordsX[s] -Cx);
-                    vertexPositionData[0].push(verArray[z+1] + coordsY[s] -Cy);
-                    vertexPositionData[0].push(verArray[z+2] + coordsZ[s] -Cz);    
-                                   
-                    z=z+3;
-                    }   
-                    //alert("vertex"+vertexPositionData[atom.BloqueSolid-1].length);      
-               
-                }
-                else
-                {
-                    for (var z=0; z<verArray.length;) 
-                    {    
-                    vertexPositionData[0].push(verArray[z]   + coordsX1[s] -Cx);
-                    vertexPositionData[0].push(verArray[z+1] + coordsY1[s] -Cy);
-                    vertexPositionData[0].push(verArray[z+2] + coordsZ1[s] -Cz);  
-                                   
-                    z=z+3;
-                    }      
-                       
-                }          
-           
-            apuntador=apuntador+1;
-
-                //-----------------------------------------------------------------------------------------------------
-        }
-
-        ///////////////////////////////////////// COLORES REALES ///////////////////////////////////////////////
-
-        sphereVertexPositionBuffer[0] = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[0]);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[0]), gl.DYNAMIC_DRAW);
-        sphereVertexPositionBuffer[0].itemSize = 3;
-        sphereVertexPositionBuffer[0].numItems = (vertexPositionData[0].length / 3) * 1;
-        //alert("vertices: "+ vertexPositionData[0].length);
-
-
-    }
-    else
-    {
-        for(var i=0; i<NoBloques; i++)
-        {           
-          
-            vertexPositionData[i]=[];
-
-            if (i==NoBloques-1) //esto es que llegó al último
-            {
-                for(var j=0; j<Restantes; j++)
-                {
-
-                   //la molecula tiene la lista de átomos en orden, entonces lo recorro con los i
-                    var atom = molecule.LstAtoms[apuntador];
-                    
-                    //lo unico que va a cambiar es el buffer de posiciones VertexPosition
-                    //alert(coordsX[molecule.LstAtoms.length*pos+i]);
-                    var s=molecule.LstAtoms.length*pos+apuntador;
-
-                if(bndbuffer==0)
-                {                   
-                    for (var z=0; z<verArray.length;) 
-                    {    
-                    vertexPositionData[i].push(verArray[z]   + coordsX[s] -Cx);
-                    vertexPositionData[i].push(verArray[z+1] + coordsY[s] -Cy);
-                    vertexPositionData[i].push(verArray[z+2] + coordsZ[s] -Cz);    
-                                   
-                    z=z+3;
-                    }   
-                    //alert("vertex"+vertexPositionData[atom.BloqueSolid-1].length);      
-               
-                }
-                else
-                {
-                    for (var z=0; z<verArray.length;) 
-                    {    
-                    vertexPositionData[i].push(verArray[z]   + coordsX1[s] -Cx);
-                    vertexPositionData[i].push(verArray[z+1] + coordsY1[s] -Cy);
-                    vertexPositionData[i].push(verArray[z+2] + coordsZ1[s] -Cz);  
-                                   
-                    z=z+3;
-                    }      
-                       
-                }          
-                   
-                    apuntador=apuntador+1;
-
-                    //---------------------------------------------------------------------------------------------------------
-                }
-             
-                sphereVertexPositionBuffer[i] = gl.createBuffer();
-                gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[i]);
-                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[i]), gl.DYNAMIC_DRAW);
-                sphereVertexPositionBuffer[i].itemSize = 3;
-                sphereVertexPositionBuffer[i].numItems = (vertexPositionData[i].length / 3) * 1;
-
-            //////////////////////
-            }
-            else
-            {
-                for (var j=0; j <NoPaso; j++) 
-                {
-                  
-                    //la molecula tiene la lista de átomos en orden, entonces lo recorro con los i
-                    var atom = molecule.LstAtoms[apuntador];
-                    
-                    //lo unico que va a cambiar es el buffer de posiciones VertexPosition
-                    //alert(coordsX[molecule.LstAtoms.length*pos+i]);
-                    var s=molecule.LstAtoms.length*pos+apuntador;
-
                     if(bndbuffer==0)
                     {                   
                         for (var z=0; z<verArray.length;) 
                         {    
-                        vertexPositionData[i].push(verArray[z]   + coordsX[s] -Cx);
-                        vertexPositionData[i].push(verArray[z+1] + coordsY[s] -Cy);
-                        vertexPositionData[i].push(verArray[z+2] + coordsZ[s] -Cz);    
+                        vertexPositionData[0].push(verArray[z]   + coordsX[s] -Cx);
+                        vertexPositionData[0].push(verArray[z+1] + coordsY[s] -Cy);
+                        vertexPositionData[0].push(verArray[z+2] + coordsZ[s] -Cz);    
                                        
                         z=z+3;
                         }   
@@ -467,29 +354,141 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                     {
                         for (var z=0; z<verArray.length;) 
                         {    
-                        vertexPositionData[i].push(verArray[z]   + coordsX1[s] -Cx);
-                        vertexPositionData[i].push(verArray[z+1] + coordsY1[s] -Cy);
-                        vertexPositionData[i].push(verArray[z+2] + coordsZ1[s] -Cz);  
+                        vertexPositionData[0].push(verArray[z]   + coordsX1[s] -Cx);
+                        vertexPositionData[0].push(verArray[z+1] + coordsY1[s] -Cy);
+                        vertexPositionData[0].push(verArray[z+2] + coordsZ1[s] -Cz);  
                                        
                         z=z+3;
                         }      
                            
                     }          
+           
                     apuntador=apuntador+1;
 
-                        //---------------------------------------------------------------------------------------------------
+                //-----------------------------------------------------------------------------------------------------
                 }
 
+                ///////////////////////////////////////// COLORES REALES ///////////////////////////////////////////////
 
-                sphereVertexPositionBuffer[i] = gl.createBuffer();
-                gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[i]);
-                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[i]), gl.DYNAMIC_DRAW);
-                sphereVertexPositionBuffer[i].itemSize = 3;
-                sphereVertexPositionBuffer[i].numItems = (vertexPositionData[i].length / 3) * 1;
-            
+                sphereVertexPositionBuffer[0] = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[0]);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[0]), gl.DYNAMIC_DRAW);
+                sphereVertexPositionBuffer[0].itemSize = 3;
+                sphereVertexPositionBuffer[0].numItems = (vertexPositionData[0].length / 3) * 1;
+                //alert("vertices: "+ vertexPositionData[0].length);
+
+
             }
-        }
-    }
+            else
+            {
+                for(var i=0; i<NoBloques; i++)
+                {           
+                  
+                    vertexPositionData[i]=[];
+
+                    if (i==NoBloques-1) //esto es que llegó al último
+                    {
+                        for(var j=0; j<Restantes; j++)
+                        {
+
+                           //la molecula tiene la lista de átomos en orden, entonces lo recorro con los i
+                            var atom = molecule.LstAtoms[apuntador];
+                            
+                            //lo unico que va a cambiar es el buffer de posiciones VertexPosition
+                            //alert(coordsX[molecule.LstAtoms.length*pos+i]);
+                            var s=molecule.LstAtoms.length*pos+apuntador;
+
+                            if(bndbuffer==0)
+                            {                   
+                                for (var z=0; z<verArray.length;) 
+                                {    
+                                vertexPositionData[i].push(verArray[z]   + coordsX[s] -Cx);
+                                vertexPositionData[i].push(verArray[z+1] + coordsY[s] -Cy);
+                                vertexPositionData[i].push(verArray[z+2] + coordsZ[s] -Cz);    
+                                               
+                                z=z+3;
+                                }   
+                                //alert("vertex"+vertexPositionData[atom.BloqueSolid-1].length);      
+                           
+                            }
+                            else
+                            {
+                                for (var z=0; z<verArray.length;) 
+                                {    
+                                vertexPositionData[i].push(verArray[z]   + coordsX1[s] -Cx);
+                                vertexPositionData[i].push(verArray[z+1] + coordsY1[s] -Cy);
+                                vertexPositionData[i].push(verArray[z+2] + coordsZ1[s] -Cz);  
+                                               
+                                z=z+3;
+                                }      
+                                   
+                            }          
+                               
+                                apuntador=apuntador+1;
+
+                                //---------------------------------------------------------------------------------------------------------
+                            }
+                         
+                            sphereVertexPositionBuffer[i] = gl.createBuffer();
+                            gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[i]);
+                            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[i]), gl.DYNAMIC_DRAW);
+                            sphereVertexPositionBuffer[i].itemSize = 3;
+                            sphereVertexPositionBuffer[i].numItems = (vertexPositionData[i].length / 3) * 1;
+
+                        //////////////////////
+                    }
+                    else
+                    {
+                        for (var j=0; j <NoPaso; j++) 
+                        {
+                  
+                            //la molecula tiene la lista de átomos en orden, entonces lo recorro con los i
+                            var atom = molecule.LstAtoms[apuntador];
+                            
+                            //lo unico que va a cambiar es el buffer de posiciones VertexPosition
+                            //alert(coordsX[molecule.LstAtoms.length*pos+i]);
+                            var s=molecule.LstAtoms.length*pos+apuntador;
+
+                            if(bndbuffer==0)
+                            {                   
+                                for (var z=0; z<verArray.length;) 
+                                {    
+                                    vertexPositionData[i].push(verArray[z]   + coordsX[s] -Cx);
+                                    vertexPositionData[i].push(verArray[z+1] + coordsY[s] -Cy);
+                                    vertexPositionData[i].push(verArray[z+2] + coordsZ[s] -Cz);    
+                                                   
+                                    z=z+3;
+                                }   
+                                //alert("vertex"+vertexPositionData[atom.BloqueSolid-1].length);      
+                   
+                            }
+                            else
+                            {
+                                for (var z=0; z<verArray.length;) 
+                                {    
+                                    vertexPositionData[i].push(verArray[z]   + coordsX1[s] -Cx);
+                                    vertexPositionData[i].push(verArray[z+1] + coordsY1[s] -Cy);
+                                    vertexPositionData[i].push(verArray[z+2] + coordsZ1[s] -Cz);  
+                                                   
+                                    z=z+3;
+                                }      
+                           
+                            }          
+                            apuntador=apuntador+1;
+
+                        //---------------------------------------------------------------------------------------------------
+                        }
+
+
+                        sphereVertexPositionBuffer[i] = gl.createBuffer();
+                        gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[i]);
+                        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[i]), gl.DYNAMIC_DRAW);
+                        sphereVertexPositionBuffer[i].itemSize = 3;
+                        sphereVertexPositionBuffer[i].numItems = (vertexPositionData[i].length / 3) * 1;
+                    
+                    }
+                }
+            }
             //console.log("sale");
          
             framecounter(numframe+1);
@@ -522,6 +521,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                 coordsZ1=new Float32Array();
                 bndreview = true;
             }
+       
  
             for(var i=0; i<NBS; i++) //colores reales
                 {              
@@ -772,21 +772,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
     } else {
         console.log("Desconosco el navegador del que me visitas");
     }
-        window.onload = function(){
-
-        if (typeof(Worker)=="undefined"){
-            alert("Workers no soportados");
-        } else {
-            //Para modificar worker1.js y evitar caché
-            var marcaTime = parseInt(Math.random() * 1000000);
-            worker1 = new Worker("js/worker.js?=" + marcaTime);
-            worker1.postMessage = worker1.webkitPostMessage || worker1.postMessage;
-            worker1.addEventListener("message", manejadorEventoWorker1, false);
-        }
-
-        
-    };
-
+      
 
     function manejadorEventoWorker1(event){
             if(event.data.cmd=="enviar"){
