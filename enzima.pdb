@@ -1,6 +1,4 @@
 TITLE     DUMMY in water t=   0.00000
-NFRAMES   251
-TRJPATH   enzima.dcd
 REMARK    THIS IS A SIMULATION BOX
 CRYST1   74.808   74.808   74.808  90.00  90.00  90.00 P 1           1
 MODEL        1

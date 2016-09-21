@@ -35,6 +35,7 @@
 
           //Bandera
           var xtc = false;
+          var dcd= false;
 
           //Variables DCD
           var rec_scale64 = false;
@@ -53,6 +54,7 @@
           var ntitle;
           var n_floats;
           var s;
+          var paso=0;
           var arregl = new Float32Array(50000);
           var arregl1 = new Float32Array(50000);
           var arregl2 = new Float32Array(50000);
@@ -83,7 +85,7 @@
               stream.on('data', function(data) {
                   try {
                       if (data == 'error') {
-                          console.log("Error, no file exist or file corrupt");
+                          throw Error("Error, no file exist or file corrupt");
                       } else if (data.slice(0, 4) == "size") {
                           tam = parseInt(data.slice(4));
                           //    self.postMessage({cmd:"sizefile",
@@ -93,11 +95,9 @@
                           if (new DataView(data).getInt32(0) == e.data.natoms) {
                               init = 1;
                               xtc = true;
-                          } else {
-                              console.log("This file is not for this molecule");
-
+                          } else if(new DataView(data).getInt32(0) == 1146244931 || new DataView(data).getInt32(0,1) == 1146244931 ) {
+                            dcd=true;
                           }
-
                           client.send("fpath", { fpath: fpath, reqsize: false, verif: false, start: readstart, end: readend });
                       } else {
                           //    console.log(part.byteLength);
@@ -134,7 +134,7 @@
                           }
                       }
                   } catch (err) {
-                      console.log(err.message);
+                      throw err;
                   }
               });
               stream.on('end', function() {
@@ -182,13 +182,13 @@
 
           function checkfile(buffer) {
               if (new DataView(buffer).getInt32(0) != 1995) {
-                  console.log("File is not a XTC-File! ");
+                  throw new Error("File is not a XTC-File! ");
                   stop = 1;
                   return -1;
               }
               natoms = new DataView(buffer).getInt32(4);
               if (natoms != e.data.natoms) {
-                  console.log("This file not is valid for this molecule");
+                  throw Error("This file not is valid for this molecule");
                   stop = 1;
                   return -1;
               }
@@ -608,13 +608,13 @@
           leer = function(part) {
               var doc = new Int32Array(part); // Se ven los bytes como Ints de 4 Bytes
               if (doc[0] + doc[1] == 84) { //Todos los Archivos DCD Empiezan con un 84 seguido de la palabra CORD
-                  console.log("Recscale de 64 bits");
+                  console.log("64 bits Recscale ");
                   rec_scale64 = true; //Se Activa La Bandera de que son Numeros de 64bits(8 Bytes)
               } else if (doc[0] == 84 && doc[1] == 1146244931) { //Valor de la palabra CORD en Numero
-                  console.log("Recscale de 32 Bits");
+                  console.log("32 bit Recscale" );
                   rec_scale64 = false; //Se desactiva la bandera son enteros comunes 32bits(4 bytes)
               } else {
-                  throw "Formato Erroneo de DCD o Almacenado como Big Endian";
+                  throw new Error("DCD: CORD or Initial 84 Not Found");
               }
               if (!rec_scale64) { //Proceso si el archivo maneja enteros de 32bits
                   hdrbuf = new Int32Array(doc.subarray(2, 22)); //Se Le encabezado(80 Bytes)
@@ -622,7 +622,7 @@
                   if (hdrbuf[-1] != 0) { //Si el ultimo valor del encabezado 0 es formato X-PLOR de lo contrario es CHARMM
                       charmm = true;
                   } else {
-                      throw "No se maneja Formato X-PLOR"; //Por Ahora
+                      throw new Error("DCD: X-plor Format Not Supported"); //Por Ahora
                   }
                   n_csets = hdrbuf[0]; //Numero de sets de coordenadas
                   first_ts = hdrbuf[1]; //Cuadro desde el que inicia la animacion
@@ -630,37 +630,39 @@
                   n_fixed = hdrbuf[8]; // Cantidad De Atomos Fijos
 
                   if (n_fixed != 0) {
-                      throw "Trayectorias con atomos fijos no son soportadas";
+                      throw new Error("DCD: Trajectories with Fixed Atoms Not Supported");
                   }
 
                   timestep = hdrbuf[9]; //Cantidad De Cuadros Por segundo
                   unitcell = hdrbuf[10] == 1; //Indica si Hay Informacion de Unitcell
+                  if(unitcell)
+                  {
+                    paso=14;
+                  }
 
                   if (doc[22] != 84) { //Estas validaciones verifican el fin del bloque....
-                      throw "Formato Erroneo de DCD";
+                      throw new Error("DCD:Bad Format");
                   }
                   if ((doc[23] - 4) % 80 != 0) { //y El inicio del siguiente
-                      throw "Formato No Reconocido";
+                      throw new Error("DCD:Bad Format");
                   }
                   noremarks = doc[23] == 84; //Se verifica si hay remarks 
                   ntitle = doc[24]; // se lee ntitle
-                  dcdtitle = new Uint32Array(doc.subarray(25, 45)); //Se lee dcdtitle
-                  if (noremarks == 84) { //Si hay remarks se leen
-                      remarks = new Uint32Array(doc.subarray(45, 65));
+                  var pos=25; //Variable para posicion, A partir de este punto puede haber variaciones
+                  dcdtitle = new Uint32Array(doc.subarray(pos, pos+(ntitle*20))); //Se lee dcdtitle
+                  pos+=(ntitle*20);
+                  if ((doc[pos] - 4) % 80 != 0 || doc[pos+1] != 4) { //Aqui se valida el fin del bloque
+                      throw new Error("DCD:Bad Format");
                   }
-                  if ((doc[65] - 4) % 80 != 0 || doc[66] != 4) { //Aqui se valida el fin del bloque
-                      console.log(doc[65]);
-                      throw "Formato No Reconocido";
+                  pos+=2;
+                  n_atoms = doc[pos];
+                  pos++;
+                  if (doc[pos] != 4 || n_atoms!=e.data.natoms) {
+                      throw new Error("DCD:Bad Format or Numer of Atoms on file are not equal ("+n_atoms+"/"+e.data.natoms+")");
                   }
-                  n_atoms = doc[67];
-                  if (doc[68] != 4 || n_atoms!=e.data.natoms) {
-                      throw "Formato No Reconocido";
-                  }
-
-                  var pos =83;
+                  pos+=paso+1;
                   var buff= new Float32Array(part);
                   n_floats=n_atoms+2;
-                  if (unitcell == 1) {
                         for(var i=0;i<n_csets;i++)
                         {
                           /*var j=0;
@@ -691,10 +693,10 @@
                               dato2: arr2.subarray(1,-1),
                               bndarray: bnd
                           });
-                          pos+=n_floats+14;
+                          pos+=n_floats+paso;
                         }
                       
-                  }
+                  
                   console.log("Fin de lectura");
 
 
