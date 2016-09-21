@@ -284,7 +284,8 @@ function Main()
 				+"	    <li><a href='#' id='Bonds'>Bonds</a></li>" 
 				+"	    <li><a href='#' title='Spheres Bonds' id='Spheres Bonds'>S.Bonds</a></li>" 
 				+"	    <li><a href='#' id='Skeleton'>Skeleton</a></li> </ul> </li> </ul> </div></div>"
-				document.getElementById('WebGL-Out').innerHTML = hope; 
+
+		document.getElementById('WebGL-Out').innerHTML = hope; 
 		var tagjs = document.createElement("script");       
       	tagjs.setAttribute("src", "fonts/optimer_regular.typeface.js");
       	document.getElementsByTagName("head")[0].appendChild(tagjs);
@@ -300,21 +301,22 @@ function Main()
 
   		
         if(typeof(URLS) != "undefined")
-        	{ 
-        		 for(var i in URLS)
-			    {		
-			    	var button = document.getElementById( "Molecule" ); 
-		        	button.innerHTML+='<li><a href="#" id="new"></a></li>';	
+        { 
+        	for(var i in URLS)
+			{		
+			   	var button = document.getElementById( "Molecule" ); 
+		       	button.innerHTML+='<li><a href="#" id="new"></a></li>';	
 
-		        	button = document.getElementById("new"); 
-		        	button.id=URLS[i].name;
-		        	button.innerHTML=URLS[i].name;
-			    }
-		  
-        	}
-		else{ 
-			URLS = null;
+		       	button = document.getElementById("new"); 
+		       	button.id=URLS[i].name;
+		       	button.innerHTML=URLS[i].name;
 			}
+		  
+        }
+		else
+		{ 
+			URLS = null;
+		}
 
 	    var button = document.getElementById( "Molecule" ); 
         button.innerHTML+='<li><a href="#" id="ByURL">By URL</a></li>';
@@ -328,7 +330,8 @@ function Main()
         buttontraj.onclick=this.ScenebyTrajectory();
 
         var buttontrj = document.getElementById( "trajauto" ); 
-        buttontrj.onclick=function(){
+        buttontrj.onclick=function()
+        {
         	url="http://127.0.0.1:25565/test/prueba.pdb";
         	//main.DeleteModel();
         	main.MakeModel(url);
@@ -373,28 +376,32 @@ function Main()
         return function(event)
         {
         	//se coloca la ip del servidor y el puerto que se abrió
-        	    url = prompt("URL: ", "http://187.140.221.127:25565/test/2vep_md_prot.pdb");
-		    if(url!=''){
-			if(url.length==4)
-			url="http://www.rcsb.org/pdb/files/"+url+".pdb";
-			//alert(url);
-		    try{
-			  main.DeleteModel();
-		    main.MakeModel(url); 
-		    }catch(e)
-			{
-				data.innerHTML='Error: Invalid URL or Connection not available';
-			}
-		     }
+        	url = prompt("URL: ", "http://187.140.221.127:25565/test/2vep_md_prot.pdb");
+		    if(url!='')
+		    {
+				if(url.length==4)
+				url="http://www.rcsb.org/pdb/files/"+url+".pdb";
+				//alert(url);
+			    try
+			    {
+				  	main.DeleteModel();
+			    	main.MakeModel(url); 
+			    }
+			    catch(e)
+				{
+					data.innerHTML='Error: Invalid URL or Connection not available';
+				}
+		    }
 		     
 		}
 	}
 
-	this.trajreview=function(){	
-	alert("help");	
-	trjauto=true;
-	bndknowframe=true;
-	$('#loadtraj').click();		
+	this.trajreview=function()
+	{	
+		alert("help");	
+		trjauto=true;
+		bndknowframe=true;
+		$('#loadtraj').click();		
 	}
 
 	this.ScenebyTrajectory=function()
@@ -413,110 +420,127 @@ function Main()
 
 
 
-this.filerequest=function(){
-        trjbnd=false;
-        numframe=0;
+	this.filerequest=function()
+	{
+	    trjbnd=false;
+	    numframe=0;
 		requireddata=false;
 		totalframes=0;
 		pos=0;
-        sizeglob=0;
+	    sizeglob=0;
 		readend=4999999;
 		readstart=0;
 		bndbuffer=0;
 		sizearrayp=0;
-        coordsX= new Float32Array();
+	    coordsX= new Float32Array();
 		coordsX1=new Float32Array();
-        coordsY= new Float32Array();
+	    coordsY= new Float32Array();
 		coordsY1=new Float32Array();	
-        coordsZ= new Float32Array();
+	    coordsZ= new Float32Array();
 		coordsZ1=new Float32Array();
-        bndreview = false;      
-        bitratespeed();  
-      var interval=setInterval(function(){
-        if((sizeglob/molecule.GetAtoms().length)>0){
-         trjbnd=true;
-        var button=document.getElementById("playpause");
-        button.style.display="inline";
-          clearInterval(interval);
-        }
-      },1000);
-      //main.Obj3D.getDataAtoms();
-      }
-
-function bitratespeed(){
-var imageAddr = "speedtest.jpg" + "?n=" + Math.random() ;
-var startTime, endTime ;
-var downloadSize = 81877; 
-var download = new Image() ; 
-download.onload = function() { 
-endTime = (new Date()).getTime() ; 
-senddataworker(startTime,endTime,downloadSize) ;
-}
-startTime = (new Date()).getTime() ; 
-download.src = imageAddr ;
-}
-
-function senddataworker(startTime,endTime,downloadSize) {
-  var duration = Math.round((endTime - startTime) / 1000) ; 
-  var bitsLoaded = downloadSize * 8 ;
-  bitrate = Math.round(bitsLoaded / duration) ;
-  if(!trjauto){
-  fpath = window.prompt("enter path file","2vep_md_prot_fit.xtc");
-  main.ObjP.Model.TrjPath=fpath;
-  bndknowframe=false;
-   }else{
-   	fpath=main.ObjP.Model.TrjPath;
-   	bndknowframe=true;
-   	trjauto=false;
-   	if(autoplay==false){
-   	totalframes1=main.ObjP.Model.Frames;
-   	var button = document.getElementById("playpause");
-   	button.value = 'Play';
-     }
-   }
-   if(autoplay)
-   {
-  data.innerHTML='Loading trajectory ... '
+	    bndreview = false;      
+	    bitratespeed();  
+	    var interval=setInterval(function(){
+	    	if((sizeglob/molecule.GetAtoms().length)>0)
+	    	{
+	        	trjbnd=true;
+		        var button=document.getElementById("playpause");
+		        button.style.display="inline";
+	          	clearInterval(interval);
+	        }
+	      },1000);
+	      //main.Obj3D.getDataAtoms();
 	}
-  worker1.postMessage({cmd:"startfile",
-                       fpath:fpath,
-                       natoms:molecule.GetAtoms().length,
-                       bitrate:bitrate,
-                       readstart: readstart,
-                       readend:readend});
-var intervalreq= setInterval(function(){
-	if(bndfinal==true){
-		console.log("ya lo borro");
-		clearInterval(intervalreq);
-		}else{
-	if(parseInt(totalframes)==numframe && bndfinal==true){
-		//main.DeleteModel();
-		//main.MakeModel(url);
-		console.log("lo va a borrar");
-		clearInterval(intervalreq);
+
+	function bitratespeed()
+	{
+		var imageAddr = "speedtest.jpg" + "?n=" + Math.random() ;
+		var startTime, endTime ;
+		var downloadSize = 81877; 
+		var download = new Image() ; 
+		download.onload = function() { 
+			endTime = (new Date()).getTime() ; 
+			senddataworker(startTime,endTime,downloadSize) ;
 		}
-    if(totalframes>200 && (totalframes-numframe)<=200 && requireddata==true){
-      requireddata=false;
-      sizearrayp=0;
-      if(bndbuffer==1){
-        coordsX = new Float32Array(sizearrayp);
-        coordsY = new Float32Array(sizearrayp);
-        coordsZ = new Float32Array(sizearrayp);
-      }else{
-        coordsX1 = new Float32Array(sizearrayp);
-        coordsY1 = new Float32Array(sizearrayp);
-        coordsZ1 = new Float32Array(sizearrayp);
-      }
-      worker1.postMessage({cmd:"startfile",
-                           fpath:fpath, 
-                            natoms:molecule.GetAtoms().length,
-                            bitrate:bitrate,
-                            readstart: readstart,
-                            readend:readend});
-    }
-  }
-  },2000);
-} 
+		startTime = (new Date()).getTime() ; 
+		download.src = imageAddr ;
+	}
+
+	function senddataworker(startTime,endTime,downloadSize) 
+	{
+		var duration = Math.round((endTime - startTime) / 1000) ; 
+		var bitsLoaded = downloadSize * 8 ;
+		bitrate = Math.round(bitsLoaded / duration) ;
+		if(!trjauto)															//en este bloque se asigna la trayectoria
+		{
+			fpath = window.prompt("enter path file","2vep_md_prot_fit.xtc");
+		  	molecule.TrjPath=fpath;
+		  	bndknowframe=false;
+	   	}
+	   	else
+	   	{
+		   	fpath=main.ObjP.Model.TrjPath;
+		   	bndknowframe=true;
+		   	trjauto=false;
+		   	if(autoplay==false)
+		   	{
+			   	totalframes1=main.ObjP.Model.Frames;
+			   	var button = document.getElementById("playpause");
+			   	button.value = 'Play';
+		    }
+	    }
+	   if(autoplay)
+	    {
+	  		data.innerHTML='Loading trajectory ... '
+		}
+	  	worker1.postMessage({cmd:"startfile",
+	                       fpath:fpath,
+	                       natoms:molecule.GetAtoms().length,
+	                       bitrate:bitrate,
+	                       readstart: readstart,
+	                       readend:readend});
+		var intervalreq= setInterval(function()
+		{
+			if(bndfinal==true)
+			{
+				console.log("ya lo borro");
+				clearInterval(intervalreq);
+			}
+			else
+			{
+				if(parseInt(totalframes)==numframe && bndfinal==true)
+				{
+					//main.DeleteModel();
+					//main.MakeModel(url);
+					console.log("lo va a borrar");
+					clearInterval(intervalreq);
+				}
+			    if(totalframes>200 && (totalframes-numframe)<=200 && requireddata==true)
+			    {
+			      	requireddata=false;
+			      	sizearrayp=0;
+			      	if(bndbuffer==1)
+			      	{
+				        coordsX = new Float32Array(sizearrayp);
+				        coordsY = new Float32Array(sizearrayp);
+				        coordsZ = new Float32Array(sizearrayp);
+			      	}
+			      	else
+			      	{
+				        coordsX1 = new Float32Array(sizearrayp);
+				        coordsY1 = new Float32Array(sizearrayp);
+				        coordsZ1 = new Float32Array(sizearrayp);
+			      	}
+			      	worker1.postMessage({cmd:"startfile",
+			                            fpath:fpath, 
+			                            natoms:molecule.GetAtoms().length,
+			                            bitrate:bitrate,
+			                            readstart: readstart,
+			                            readend:readend});
+			    }
+		    }
+	    },2000);
+	} 
 
 }
 
