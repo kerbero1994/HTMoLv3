@@ -40,6 +40,9 @@ function Main()
         var marcaTime = parseInt(Math.random() * 1000000);
         worker1 = new Worker("js/worker.js?=" + marcaTime);
         worker1.postMessage = worker1.webkitPostMessage || worker1.postMessage;
+        worker1.onerror= function(e){
+        	data.innerHTML=e.message;
+        } 
         worker1.addEventListener("message", manejadorEventoWorker1, false);
     }
     //----------------------------------------------------------------------------------------------------------------
