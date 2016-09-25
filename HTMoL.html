@@ -314,6 +314,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
             var apuntador=0;
             var NoAtomos = molecule.LstAtoms.length;
             var Restantes = NoAtomos - ((NoBloques-1) * NoPaso);
+            //alert(coordsX);
             if((pos*molecule.LstAtoms.length)==coordsX.length && bndbuffer==0)
             {
                 bndbuffer=1;
@@ -557,11 +558,18 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                 numframe++;
                 pos++;
             }
-            else if(bndfinal==true)
+            else
             {
                 console.log("segunda parte");
                 var button=document.getElementById("playpause");
                 button.value="Play";
+                //agregado
+                autoplay=false;
+                totalframes=0;
+                bndfinal=false;
+                numframe=0;
+                pos=0;
+                /*
                 trjbnd=false;
                 numframe=0;
                 requireddata=false;
@@ -580,6 +588,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                 coordsZ= new Float32Array();
                 coordsZ1=new Float32Array();
                 bndreview = true;
+                */
                 console.log("segunda parte sale");
             }
        
@@ -778,7 +787,9 @@ else
         return function (event)
         {
             var button=document.getElementById("playpause");
+            //alert("autoplay:"+autoplay + " trjbnd:"+trjbnd);
            
+
             if(!autoplay)
             {
                 //alert("autoplay diferent");
