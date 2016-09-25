@@ -29,7 +29,6 @@ var fpath;
 
 function Main()
 {
-
 	//-----------------------------------Bloque inicial para declarar el worker----------------------------------
 	if (typeof(Worker)=="undefined")
 	{
@@ -44,39 +43,12 @@ function Main()
         worker1.addEventListener("message", manejadorEventoWorker1, false);
     }
     //----------------------------------------------------------------------------------------------------------------
-        
-	var main=this;
+    var main=this;
 	this.ObjP= new Process();
-
 	//--------------------------Este bloque se va a crear en una función ya que aquí se lee el archivo pdb con la ruta dada-------------------
 	molecule=this.ObjP.ReadFile("1crn.pdb");
-
-      var bond= new Bond();
-            for (var t in molecule.GetChain())
-            {
-                 var chn=molecule.GetChain()[t];
-                 for(var r in chn.GetAminoacid())
-                 {
-                       var amn=chn.GetAminoacid()[r];
-                       for(var s in amn.GetAtoms())
-                       {
-                            var atom=amn.GetAtoms()[s];
-                            for(var b in AtomsBonds[atom.NameAtom])
-                            {
-                                  var val=AtomsBonds[atom.NameAtom][b];
-                                  for(var s in amn.GetAtoms())
-                                  {
-
-                                       var atomb=amn.GetAtoms()[s];
-                                       if(val==atomb.NameAtom)
-                                       {
-                                          bond=this.ObjP.AddBond(bond,atom,atomb);
-                                       }
-                                  }
-                            }
-                       }
-                 }
-            }
+	createBonds(this);	
+      
     //--------------------------------------------------------------------------------------------------------------------------------------------------
 
     AtomosSeleccionados=molecule.LstAtoms;
@@ -101,56 +73,22 @@ function Main()
 		}
 	   }
 	}
-	
+
+		
 	this.MakeModel=function(url)
 	{
-		//alert("makeModel");
 	   molecule=main.ObjP.ReadFile(url);	
-	    var bond= new Bond();
-            for (var t in molecule.GetChain())
-            {
-                 var chn=molecule.GetChain()[t];
-                 for(var r in chn.GetAminoacid())
-                 {
-                       var amn=chn.GetAminoacid()[r];
-                       for(var s in amn.GetAtoms())
-                       {
-                            var atom=amn.GetAtoms()[s];
-                            for(var b in AtomsBonds[atom.NameAtom])
-                            {
-                                  var val=AtomsBonds[atom.NameAtom][b];
-                                  for(var s in amn.GetAtoms())
-                                  {
-
-                                       var atomb=amn.GetAtoms()[s];
-                                       if(val==atomb.NameAtom)
-                                       {
-                                          bond=this.ObjP.AddBond(bond,atom,atomb);
-                                       }
-                                  }
-                            }
-                       }
-                 }
-            }
+	    
+	   createBonds(main);
 
 	   initBuffers();
 
 	   if(molecule!=null)
 	   {
 	   	   data.innerHTML="Loading...";
-		   /*
-		   PredictionAndCamera();
-		   main.ObjP.Spheres(chain,main.Obj3D);
-		   main.ObjP.representation.Bonds.MakeBonds(main.ObjP,main.Obj3D);
-		   main.ObjP.representation.Skeleton.Make(main.Obj3D);		   
-
-		   main.Obj3D.CenterObjects(main.ObjP.PointCenter.X,main.ObjP.PointCenter.Y,main.ObjP.PointCenter.Z);
-		   main.Obj3D.DeleteButtons();
-		   */
-			
-
-		   //main.Obj3D.Buttons(molecule);
-		   if(main.ObjP.Model.Frames!=0 && main.ObjP.Model.Frames!=""){
+		  
+		   if(main.ObjP.Model.Frames!=0 && main.ObjP.Model.Frames!="")
+		   {
 		   main.filerequest();	
 		   console.log(trjauto);	   
 		   trjauto=true;

@@ -530,19 +530,19 @@ function initBuffers()
 
     NBS=NoBloques;
     ///////////////////////////////////////////////////////// LINEAS DE ENLACES //////////////////////////////////////////////
+    verticesLineas=[];
     lineVertexPositionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, lineVertexPositionBuffer);
-    var vertices=[];
     var linesNormals=[];
     for(var t in molecule.LstBonds)
             {
               var o = molecule.LstBonds[t];
-              vertices.push(o.LstAtoms[0].X -Cx);
-              vertices.push(o.LstAtoms[0].Y -Cy);
-              vertices.push(o.LstAtoms[0].Z -Cz);
-              vertices.push(o.LstAtoms[1].X -Cx);
-              vertices.push(o.LstAtoms[1].Y -Cy);
-              vertices.push(o.LstAtoms[1].Z -Cz);  
+              verticesLineas.push(o.LstAtoms[0].X -Cx);
+              verticesLineas.push(o.LstAtoms[0].Y -Cy);
+              verticesLineas.push(o.LstAtoms[0].Z -Cz);
+              verticesLineas.push(o.LstAtoms[1].X -Cx);
+              verticesLineas.push(o.LstAtoms[1].Y -Cy);
+              verticesLineas.push(o.LstAtoms[1].Z -Cz);  
               linesNormals.push(o.LstAtoms[0].X -Cx);
               linesNormals.push(o.LstAtoms[0].Y -Cy);
               linesNormals.push(o.LstAtoms[0].Z -Cz);
@@ -551,9 +551,9 @@ function initBuffers()
               linesNormals.push(o.LstAtoms[1].Z -Cz);             
             }
             //alert(vertices.length);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.DYNAMIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verticesLineas), gl.DYNAMIC_DRAW);
     lineVertexPositionBuffer.itemSize = 3;
-    lineVertexPositionBuffer.numItems = vertices.length/3;
+    lineVertexPositionBuffer.numItems = verticesLineas.length/3;
     
     colorVertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, colorVertexBuffer);

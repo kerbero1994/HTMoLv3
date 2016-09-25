@@ -112,6 +112,35 @@ function Atom(number,x,y,z,state,element,nameatom)
     this.PositionBSolid=0;
 }
 
+function createBonds(main)
+	{
+		var bond= new Bond();
+	    for (var t in molecule.GetChain())
+	    {
+	        var chn=molecule.GetChain()[t];
+	        for(var r in chn.GetAminoacid())
+	        {
+	            var amn=chn.GetAminoacid()[r];
+	            for(var s in amn.GetAtoms())
+	            {
+	                var atom=amn.GetAtoms()[s];
+	                for(var b in AtomsBonds[atom.NameAtom])
+	                {
+	                    var val=AtomsBonds[atom.NameAtom][b];
+	                    for(var s in amn.GetAtoms())
+	                    {
+	                        var atomb=amn.GetAtoms()[s];
+	                        if(val==atomb.NameAtom)
+	                        {
+	                            bond=main.ObjP.AddBond(bond,atom,atomb);
+	                        }
+	                    }
+	                }
+	            }
+	        }
+	    }
+	}
+
 function Process()
 {
     this.Model= new Molecule();

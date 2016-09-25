@@ -308,6 +308,9 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
         if(trjbnd && autoplay) //trjbnd y autoplay están declaradas en el Main   
         {
             console.log("empieza play");
+            console.log("coordsX:"+coordsX.length);
+            console.log("pos:"+pos);
+            console.log("frame:"+numframe);
             var apuntador=0;
             var NoAtomos = molecule.LstAtoms.length;
             var Restantes = NoAtomos - ((NoBloques-1) * NoPaso);
@@ -490,6 +493,61 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                     }
                 }
             }
+
+
+            //----------------------------------------  PARTE DE LOS ENLACES   ------------------------------------------------
+            //alert(verticesLineas);
+            verticesLineas = [];
+            for (var i=0; i<molecule.LstBonds.length;i++)
+            {
+                var atm1 = molecule.LstBonds[i].LstAtoms[0];  //checar lo de la continuidad de los PDB cómo aparecen los átomos
+                var atm2 = molecule.LstBonds[i].LstAtoms[1];
+               
+                var temp1 = molecule.LstAtoms.length*pos;
+                var temp2 = molecule.LstAtoms.length*pos;
+
+                //alert("entra");
+                //alert("Atm1:"+temp1 + atm1.NumberAtom);
+                //alert("Atm2:"+temp2 + atm2.NumberAtom);
+
+                if ( temp1 <= coordsX.length )  //ESTÁ DENTRO DEL BUFFER1
+                {
+                    //alert(temp1);
+                    //alert(atm1.NumberAtom);
+                    //alert(parseInt(temp1) + parseInt(atm1.NumberAtom));
+                    //alert(coordsX[parseInt(temp1) + parseInt(atm1.NumberAtom)]);
+                    verticesLineas.push(coordsX[parseInt(temp1) + parseInt(atm1.NumberAtom) -1] -Cx);
+                    verticesLineas.push(coordsY[parseInt(temp1) + parseInt(atm1.NumberAtom) -1] -Cy);
+                    verticesLineas.push(coordsZ[parseInt(temp1) + parseInt(atm1.NumberAtom) -1] -Cz);
+
+                }
+                else
+                {
+                    alert("no");
+
+                }
+                if ( temp2 <= coordsX.length )  //ESTÁ DENTRO DEL BUFFER1
+                {
+                    verticesLineas.push(coordsX[parseInt(temp2) + parseInt(atm2.NumberAtom) -1] -Cx);
+                    verticesLineas.push(coordsY[parseInt(temp2) + parseInt(atm2.NumberAtom) -1] -Cy);
+                    verticesLineas.push(coordsZ[parseInt(temp2) + parseInt(atm2.NumberAtom) -1] -Cz);
+
+                }
+                else
+                {
+                    alert("no2");
+                }
+
+
+            }
+            //alert(verticesLineas);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, lineVertexPositionBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verticesLineas), gl.DYNAMIC_DRAW);
+            lineVertexPositionBuffer.itemSize = 3;
+            lineVertexPositionBuffer.numItems = verticesLineas.length/3;
+
+
             //console.log("sale");
          
             framecounter(numframe+1);
@@ -527,7 +585,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
        
  
             for(var i=0; i<NBS; i++) //colores reales
-                {              
+            {              
                     gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[i]);
                     gl.vertexAttribPointer(currentProgram.vertexPositionAttribute, sphereVertexPositionBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
 
@@ -541,9 +599,23 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereVertexIndexBuffer[i]);
                     setMatrixUniforms();
                     gl.drawElements(gl.TRIANGLES, sphereVertexIndexBuffer[i].numItems, gl.UNSIGNED_SHORT, 0);
-                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null); 
                    
-                }
+            }
+
+            //////PARTE DE LOS ENLACES
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, colorVertexBuffer);
+            gl.vertexAttribPointer(currentProgram.textureCoordAttribute, colorVertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, lineNormalBuffer);
+            gl.vertexAttribPointer(currentProgram.vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
+                    
+            gl.bindBuffer(gl.ARRAY_BUFFER, lineVertexPositionBuffer);
+            gl.vertexAttribPointer(currentProgram.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
+            setMatrixUniforms();
+            gl.drawArrays(gl.LINES, 0, lineVertexPositionBuffer.numItems);
+
 
         }
 
