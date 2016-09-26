@@ -80,6 +80,7 @@ function Main()
 		
 	this.MakeModel=function(url)
 	{
+		alert("ssss");
 	   molecule=main.ObjP.ReadFile(url);	
 	    
 	   createBonds(main);
@@ -317,7 +318,7 @@ function Main()
         return function(event)
         {
         	//se coloca la ip del servidor y el puerto que se abrió
-        	url = prompt("URL: ", "http://187.140.221.127:25565/test/2vep_md_prot.pdb");
+        	url = prompt("URL: ", "http://127.0.0.1:25565/test/2vep_md_prot.pdb");
 		    if(url!='')
 		    {
 				if(url.length==4)
@@ -325,7 +326,6 @@ function Main()
 				//alert(url);
 			    try
 			    {
-				  	main.DeleteModel();
 			    	main.MakeModel(url); 
 			    }
 			    catch(e)
