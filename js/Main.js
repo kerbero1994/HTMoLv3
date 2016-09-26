@@ -80,7 +80,6 @@ function Main()
 		
 	this.MakeModel=function(url)
 	{
-		alert("ssss");
 	   molecule=main.ObjP.ReadFile(url);	
 	    
 	   createBonds(main);
