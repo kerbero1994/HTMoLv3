@@ -240,6 +240,17 @@ function Main()
   		data = document.getElementById("data");
   		zoom = document.getElementById("zoom");
 
+  		//Botones para las representaciones
+  		var buttonOp = document.getElementById( "CPK" ); 
+	    buttonOp.onclick=R_Cpk();
+	      
+	    buttonOp = document.getElementById( "Spheres Bonds" );
+	    buttonOp.onclick=R_SB();
+
+	    buttonOp = document.getElementById( "Bonds" );
+	    buttonOp.onclick=R_B();
+
+		
   		
         if(typeof(URLS) != "undefined")
         { 
@@ -274,7 +285,6 @@ function Main()
         buttontrj.onclick=function()
         {
         	url="http://127.0.0.1:25565/test/prueba.pdb";
-        	//main.DeleteModel();
         	main.MakeModel(url);
         }
         
@@ -322,7 +332,6 @@ function Main()
 		    {
 				if(url.length==4)
 				url="http://www.rcsb.org/pdb/files/"+url+".pdb";
-				//alert(url);
 			    try
 			    {
 			    	main.MakeModel(url); 
@@ -336,7 +345,7 @@ function Main()
 		}
 	}
 
-	this.trajreview=function()
+	this.trajreview=function()  //Esta función no se usa
 	{	
 		alert("help");	
 		trjauto=true;
