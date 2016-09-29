@@ -284,6 +284,16 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
 
     var verticesLineas = [];
 
+    //var vec = vec3.create4();
+    // vec[0]=4;
+    // vec[1]=3;
+    // vec[2]=2;
+    // vec[3]=1;
+
+    // var vecResul = vec3.create4();
+    // var vecResul2 = vec3.create4();
+      //console.log("vec:["+vec[0]+"]["+vec[1]+"]["+vec[2]+"]["+vec[3]+"]");
+
 
     function drawScene(diffuse) 
     {
@@ -305,6 +315,14 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
         mat4.translate(mvMatrix, [x, y, -CameraPosition]);
 
         mat4.multiply(mvMatrix, RotationMatrix);
+        //mat4.multiplyVec4(mvMatrix, vec, vecResul);  //matriz por vector = vector
+        //mat4.multiplyVec4(pMatrix, vecResul, vecResul2);
+
+        //console.log("mvMatrix:["+mvMatrix[0]+"]["+mvMatrix[1]+"]["+mvMatrix[2]+"]["+mvMatrix[3]+"]  ["+mvMatrix[4]+"]["+mvMatrix[5]+"]["+mvMatrix[6]+"]["+mvMatrix[7]+"]  ["+mvMatrix[8]+"]["+mvMatrix[9]+"]["+mvMatrix[10]+"]["+mvMatrix[11]+"]  ["+mvMatrix[12]+"]["+mvMatrix[13]+"]["+mvMatrix[14]+"]["+mvMatrix[15]+"]");
+
+        //console.log("vecResul2:["+vecResul2[0]+"]["+vecResul2[1]+"]["+vecResul2[2]+"]["+vecResul2[3]+"]");
+
+         //console.log("pMatrix:["+pMatrix[0]+"]["+pMatrix[1]+"]["+pMatrix[2]+"]["+pMatrix[3]+"]  ["+pMatrix[4]+"]["+pMatrix[5]+"]["+pMatrix[6]+"]["+pMatrix[7]+"]  ["+pMatrix[8]+"]["+pMatrix[9]+"]["+pMatrix[10]+"]["+pMatrix[11]+"]  ["+pMatrix[12]+"]["+pMatrix[13]+"]["+pMatrix[14]+"]["+pMatrix[15]+"]");
 
         if(trjbnd && autoplay) //trjbnd y autoplay están declaradas en el Main   
         {
@@ -500,13 +518,13 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
             //----------------------------------------  PARTE DE LOS ENLACES   ------------------------------------------------
             //alert(verticesLineas);
             verticesLineas = [];
-            for (var i=0; i<molecule.LstBonds.length;i++)
+            for (var i=0; i<molecule.LstBondsSkeleton.length;i++)
             {
-                var atm1 = molecule.LstBonds[i].LstAtoms[0];  //checar lo de la continuidad de los PDB cómo aparecen los átomos
-                var atm2 = molecule.LstBonds[i].LstAtoms[1];
+                var atm1 = molecule.LstBondsSkeleton[i].LstAtoms[0];  //checar lo de la continuidad de los PDB cómo aparecen los átomos
+                var atm2 = molecule.LstBondsSkeleton[i].LstAtoms[1];
                
-                var temp1 = molecule.LstAtoms.length*pos;
-                var temp2 = molecule.LstAtoms.length*pos;
+                //var temp1 = molecule.LstAtoms.length*pos;
+                //var temp2 = molecule.LstAtoms.length*pos;
 
                 //alert("entra");
                 //alert("Atm1:"+temp1 + atm1.NumberAtom);
@@ -528,6 +546,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                     alert("no");
 
                 }
+                /*
                 if ( temp2 <= coordsX.length )  //ESTÁ DENTRO DEL BUFFER1
                 {
                     verticesLineas.push(coordsX[parseInt(temp2) + parseInt(atm2.NumberAtom) -1] -Cx);
@@ -538,7 +557,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                 else
                 {
                     alert("no2");
-                }
+                }*/
 
 
             }

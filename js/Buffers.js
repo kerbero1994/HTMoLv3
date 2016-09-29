@@ -3,7 +3,7 @@ var AtomArray=[];
 function initBuffers() 
 {
                 
-    AtomosSeleccionados=molecule.LstAtoms;
+    //AtomosSeleccionados=molecule.LstAtoms;
 
     Cx=molecule.CenterX;
     Cy=molecule.CenterY;
@@ -78,7 +78,7 @@ function initBuffers()
                     B=B+1;
                 }
             }
-            molecule.LstAtoms[apuntador].ColorRGBDiffuse=GetColorDif(R*Scala,G*Scala,B*Scala);
+            molecule.LstAtoms[apuntador].ColorRGBDiffuse=[R*Scala,G*Scala,B*Scala];
             molecule.LstAtoms[apuntador].BloqueSolid=1;
             molecule.LstAtoms[apuntador].PositionBSolid=i+1;
             
@@ -109,10 +109,24 @@ function initBuffers()
                 ////////////////////////////////////////////////////////////////////////////////////
 
                 z=z+3;
+
+                
+                ColorTotal[0].push(molecule.LstAtoms[apuntador].ColorRGB[0]);
+                ColorTotal[0].push(molecule.LstAtoms[apuntador].ColorRGB[1]);
+                ColorTotal[0].push(molecule.LstAtoms[apuntador].ColorRGB[2]);
+                ColorTotal[0].push(1);
+
+                ColorTotalDiffuse[0].push(molecule.LstAtoms[apuntador].ColorRGBDiffuse[0]);
+                ColorTotalDiffuse[0].push(molecule.LstAtoms[apuntador].ColorRGBDiffuse[1]);
+                ColorTotalDiffuse[0].push(molecule.LstAtoms[apuntador].ColorRGBDiffuse[2]);
+                ColorTotalDiffuse[0].push(1);
+
+
             }
-            ColorTotalDiffuse[0]=ColorTotalDiffuse[0].concat(molecule.LstAtoms[apuntador].ColorRGBDiffuse);
+            //ColorTotalDiffuse[0].push(molecule.LstAtoms[apuntador].ColorRGBDiffuse);
             //ColorTotalDiffuse[0]=ColorTotalDiffuse[0].concat(Dif[i]);
-            ColorTotal[0]=ColorTotal[0].concat(molecule.LstAtoms[apuntador].ColorRGB);
+            //ColorTotal[0].push(molecule.LstAtoms[apuntador].ColorRGB);
+            //alert(ColorTotalDiffuse[0].length);
 
             for (var latNumber=0; latNumber < latitudeBands; latNumber++) 
             {
@@ -281,11 +295,21 @@ function initBuffers()
 
                         z=z+3;
 
+                        ColorTotal[i].push(molecule.LstAtoms[apuntador].ColorRGB[0]);
+                        ColorTotal[i].push(molecule.LstAtoms[apuntador].ColorRGB[1]);
+                        ColorTotal[i].push(molecule.LstAtoms[apuntador].ColorRGB[2]);
+                        ColorTotal[i].push(1);
+
+                        ColorTotalDiffuse[i].push(molecule.LstAtoms[apuntador].ColorRGBDiffuse[0]);
+                        ColorTotalDiffuse[i].push(molecule.LstAtoms[apuntador].ColorRGBDiffuse[1]);
+                        ColorTotalDiffuse[i].push(molecule.LstAtoms[apuntador].ColorRGBDiffuse[2]);
+                        ColorTotalDiffuse[i].push(1);
+
                         //ColorDiffuse=ColorDiffuse.concat(molecule.LstAtoms[apuntador].ColorRGBDiffuse);
                     }
                     //alert("vertices: " + vertexPositionData[i].length);
-                    ColorTotalDiffuse[i]=ColorTotalDiffuse[i].concat(molecule.LstAtoms[apuntador].ColorRGBDiffuse);
-                    ColorTotal[i]=ColorTotal[i].concat(molecule.LstAtoms[apuntador].ColorRGB);
+                    //ColorTotalDiffuse[i]=ColorTotalDiffuse[i].concat(molecule.LstAtoms[apuntador].ColorRGBDiffuse);
+                    //ColorTotal[i]=ColorTotal[i].concat(molecule.LstAtoms[apuntador].ColorRGB);
 
                     for (var latNumber=0; latNumber < latitudeBands; latNumber++) 
                     {
@@ -433,10 +457,20 @@ function initBuffers()
 
                         z=z+3;
 
+                        ColorTotal[i].push(molecule.LstAtoms[apuntador].ColorRGB[0]);
+                        ColorTotal[i].push(molecule.LstAtoms[apuntador].ColorRGB[1]);
+                        ColorTotal[i].push(molecule.LstAtoms[apuntador].ColorRGB[2]);
+                        ColorTotal[i].push(1);
+
+                        ColorTotalDiffuse[i].push(molecule.LstAtoms[apuntador].ColorRGBDiffuse[0]);
+                        ColorTotalDiffuse[i].push(molecule.LstAtoms[apuntador].ColorRGBDiffuse[1]);
+                        ColorTotalDiffuse[i].push(molecule.LstAtoms[apuntador].ColorRGBDiffuse[2]);
+                        ColorTotalDiffuse[i].push(1);
+
                         //ColorDiffuse=ColorDiffuse.concat(molecule.LstAtoms[apuntador].ColorRGBDiffuse);
                     }
-                    ColorTotalDiffuse[i]=ColorTotalDiffuse[i].concat(molecule.LstAtoms[apuntador].ColorRGBDiffuse); //estas son las líneas que se congelan
-                    ColorTotal[i]=ColorTotal[i].concat(molecule.LstAtoms[apuntador].ColorRGB); //estas son las líneas que se congelan
+                    //ColorTotalDiffuse[i]=ColorTotalDiffuse[i].concat(molecule.LstAtoms[apuntador].ColorRGBDiffuse); //estas son las líneas que se congelan
+                    //ColorTotal[i]=ColorTotal[i].concat(molecule.LstAtoms[apuntador].ColorRGB); //estas son las líneas que se congelan
 
                     for (var latNumber=0; latNumber < latitudeBands; latNumber++) 
                     {
@@ -534,36 +568,40 @@ function initBuffers()
     lineVertexPositionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, lineVertexPositionBuffer);
     var linesNormals=[];
+    var colores=[];
     for(var t in molecule.LstBonds)
-            {
-              var o = molecule.LstBonds[t];
-              verticesLineas.push(o.LstAtoms[0].X -Cx);
-              verticesLineas.push(o.LstAtoms[0].Y -Cy);
-              verticesLineas.push(o.LstAtoms[0].Z -Cz);
-              verticesLineas.push(o.LstAtoms[1].X -Cx);
-              verticesLineas.push(o.LstAtoms[1].Y -Cy);
-              verticesLineas.push(o.LstAtoms[1].Z -Cz);  
-              linesNormals.push(o.LstAtoms[0].X -Cx);
-              linesNormals.push(o.LstAtoms[0].Y -Cy);
-              linesNormals.push(o.LstAtoms[0].Z -Cz);
-              linesNormals.push(o.LstAtoms[1].X -Cx);
-              linesNormals.push(o.LstAtoms[1].Y -Cy);
-              linesNormals.push(o.LstAtoms[1].Z -Cz);             
-            }
+    {
+        var o = molecule.LstBonds[t];
+        verticesLineas.push(o.LstAtoms[0].X -Cx);
+        verticesLineas.push(o.LstAtoms[0].Y -Cy);
+        verticesLineas.push(o.LstAtoms[0].Z -Cz);
+        verticesLineas.push(o.LstAtoms[1].X -Cx);
+        verticesLineas.push(o.LstAtoms[1].Y -Cy);
+        verticesLineas.push(o.LstAtoms[1].Z -Cz);  
+        linesNormals.push(o.LstAtoms[0].X -Cx);
+        linesNormals.push(o.LstAtoms[0].Y -Cy);
+        linesNormals.push(o.LstAtoms[0].Z -Cz);
+        linesNormals.push(o.LstAtoms[1].X -Cx);
+        linesNormals.push(o.LstAtoms[1].Y -Cy);
+        linesNormals.push(o.LstAtoms[1].Z -Cz); 
+        colores.push(1);
+        colores.push(1);
+        colores.push(1);
+        colores.push(1);
+        colores.push(1);
+        colores.push(1);
+        colores.push(1);
+        colores.push(1);
+
+    }
             //alert(vertices.length);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verticesLineas), gl.DYNAMIC_DRAW);
     lineVertexPositionBuffer.itemSize = 3;
     lineVertexPositionBuffer.numItems = verticesLineas.length/3;
     
     colorVertexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, colorVertexBuffer);
-    var colores=[];
-    var color=[];
-    color=[1,1,1,1,1,1,1,1]; //son dos vertices
-    for(var t in molecule.GetBonds())
-    {
-       colores=colores.concat(color)
-    }
+    gl.bindBuffer(gl.ARRAY_BUFFER, colorVertexBuffer);  
+    
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colores), gl.DYNAMIC_DRAW);
     colorVertexBuffer.itemSize=4;

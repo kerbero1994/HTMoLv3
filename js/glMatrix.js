@@ -10,6 +10,16 @@ vec3.create = function(a) {
     }
     return b
 };
+vec3.create4 = function(a) {
+    var b = new glMatrixArrayType(4);
+    if (a) {
+        b[0] = a[0];
+        b[1] = a[1];
+        b[2] = a[2];
+        b[3] = a[3]
+    }
+    return b
+};
 vec3.set = function(a, b) {
     b[0] = a[0];
     b[1] = a[1];
@@ -469,7 +479,7 @@ mat4.multiply = function(a, b, c) {
         p = a[12],
         r = a[13],
         s = a[14];
-    a = a[15];
+        a = a[15];
     var A = b[0],
         B = b[1],
         t = b[2],
@@ -485,7 +495,7 @@ mat4.multiply = function(a, b, c) {
         q = b[12],
         F = b[13],
         G = b[14];
-    b = b[15];
+        b = b[15];
     c[0] = A * d + B * h + t * l + u * p;
     c[1] = A * e + B * i + t * o + u * r;
     c[2] = A * g + B * j + t * m + u * s;
@@ -496,8 +506,7 @@ mat4.multiply = function(a, b, c) {
     c[7] = v * f + w * k + x * n + y * a;
     c[8] = z * d + C * h + D * l + E * p;
     c[9] = z * e + C * i + D * o + E * r;
-    c[10] = z *
-        g + C * j + D * m + E * s;
+    c[10] = z * g + C * j + D * m + E * s;
     c[11] = z * f + C * k + D * n + E * a;
     c[12] = q * d + F * h + G * l + b * p;
     c[13] = q * e + F * i + G * o + b * r;
@@ -509,7 +518,7 @@ mat4.multiplyVec3 = function(a, b, c) {
     c || (c = b);
     var d = b[0],
         e = b[1];
-    b = b[2];
+        b = b[2];
     c[0] = a[0] * d + a[4] * e + a[8] * b + a[12];
     c[1] = a[1] * d + a[5] * e + a[9] * b + a[13];
     c[2] = a[2] * d + a[6] * e + a[10] * b + a[14];
@@ -520,7 +529,7 @@ mat4.multiplyVec4 = function(a, b, c) {
     var d = b[0],
         e = b[1],
         g = b[2];
-    b = b[3];
+        b = b[3];
     c[0] = a[0] * d + a[4] * e + a[8] * g + a[12] * b;
     c[1] = a[1] * d + a[5] * e + a[9] * g + a[13] * b;
     c[2] = a[2] * d + a[6] * e + a[10] * g + a[14] * b;
