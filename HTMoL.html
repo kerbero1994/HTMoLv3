@@ -518,13 +518,13 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
             //----------------------------------------  PARTE DE LOS ENLACES   ------------------------------------------------
             //alert(verticesLineas);
             verticesLineas = [];
-            for (var i=0; i<molecule.LstBondsSkeleton.length;i++)
+            for (var i=0; i<molecule.LstBonds.length;i++)
             {
-                var atm1 = molecule.LstBondsSkeleton[i].LstAtoms[0];  //checar lo de la continuidad de los PDB cómo aparecen los átomos
-                var atm2 = molecule.LstBondsSkeleton[i].LstAtoms[1];
+                var atm1 = molecule.LstBonds[i].LstAtoms[0];  //checar lo de la continuidad de los PDB cómo aparecen los átomos
+                var atm2 = molecule.LstBonds[i].LstAtoms[1];
                
-                //var temp1 = molecule.LstAtoms.length*pos;
-                //var temp2 = molecule.LstAtoms.length*pos;
+                var temp1 = molecule.LstAtoms.length*pos;
+                var temp2 = molecule.LstAtoms.length*pos;
 
                 //alert("entra");
                 //alert("Atm1:"+temp1 + atm1.NumberAtom);
@@ -546,7 +546,6 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                     alert("no");
 
                 }
-                /*
                 if ( temp2 <= coordsX.length )  //ESTÁ DENTRO DEL BUFFER1
                 {
                     verticesLineas.push(coordsX[parseInt(temp2) + parseInt(atm2.NumberAtom) -1] -Cx);
@@ -557,7 +556,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                 else
                 {
                     alert("no2");
-                }*/
+                }
 
 
             }
