@@ -49,7 +49,7 @@ function Main()
     var main=this;
 	this.ObjP= new Process();
 	//--------------------------Este bloque se va a crear en una función ya que aquí se lee el archivo pdb con la ruta dada-------------------
-	molecule=this.ObjP.ReadFile("1crn.pdb");
+	molecule=this.ObjP.ReadFile("1al0.pdb");
 	createBonds(this);	
       
     //--------------------------------------------------------------------------------------------------------------------------------------------------

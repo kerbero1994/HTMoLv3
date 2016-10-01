@@ -40,9 +40,7 @@ function handleMouseDown(event) {
                 if ( (pixelsUp[0]==pixelsDown[0] && pixelsUp[1]==pixelsDown[1] && pixelsUp[2]==pixelsDown[2]) || (pixelsLeft[0]==pixelsRight[0] && pixelsLeft[1]==pixelsRight[1] && pixelsLeft[2]==pixelsRight[2]) ) 
                 {
 
-                    var number=GetNumAtom(pixels);
-                    var atom=molecule.LstAtoms[number-1];//se le resta uno ya que los arreglos de javascript comienzan en 0 y los
-                                                         //índices de los átomos comienzan en 1
+                    var atom=GetAtom(pixels);
 
                     ////////////////////////////////////////////////////////////////////////////////////////
                     /////////////////////////////// TECLA CTRL PRESIONADA //////////////////////////////////

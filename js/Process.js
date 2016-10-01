@@ -110,6 +110,9 @@ function Atom(number,x,y,z,state,element,nameatom)
     this.PositionBWire=0;
     this.BloqueSolid=0;
     this.PositionBSolid=0;
+    ////////////////////////
+
+    this.id=null; //es para poner el órden en el que aparecen
 }
 
 function createBonds(main)
@@ -172,6 +175,7 @@ function Process()
 	    var val,val2;
 	    var AtomCount=0;
 	    var contSkele=0;
+	    var id=0;
 	      
 	    for(var i=0; i<lines.length; ++i)
 	    {
@@ -261,7 +265,10 @@ function Process()
 		        /////////////////////////se añade al array
 		        //alert(atom.NameAtom);
 			   	//AtomArray.push(atom);
-			   	////////////////////////		   	
+			   	////////////////////////
+			   	id++;	
+			   	atom.id=id;
+			   		   	
 		    }
 		    
 	    }

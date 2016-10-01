@@ -37,8 +37,8 @@ function CambiarRepresentacion(Repre)   //Representacion es en lo que se va a ca
             var ato = AtomosSeleccionados[o];
 
 
-            var bloqueSIni = Math.ceil( ato.NumberAtom / NoPaso  ) - 1;   //bloque 0 va del atomo 1 al 20 
-            var verPosBS = (ato.NumberAtom - (bloqueSIni * NoPaso) - 1) * nVertices; //da la posicion exacta en el arreglo
+            var bloqueSIni = Math.ceil( ato.id / NoPaso  ) - 1;   //bloque 0 va del atomo 1 al 20 
+            var verPosBS = (ato.id - (bloqueSIni * NoPaso) - 1) * nVertices; //da la posicion exacta en el arreglo
             
             var vertexPosition = (ato.PositionBWire-1)*nVertices; //867 es el número de vértices por cada esfera de latitudes y longitudes 16
             var colorPosition  = (ato.PositionBWire-1)*nColor;

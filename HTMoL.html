@@ -1,4 +1,4 @@
-﻿<!--Licensed under the MIT license.
+<!--Licensed under the MIT license.
 http://www.opensource.org/licenses/mit-license.php
 
 this file is part of HTMoL:
@@ -17,7 +17,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
     <script src="js/Main.js"> </script>
     <script src='js/Menu.js'></script>
 
-    <script src='js/Shaders.js'></script>
+    <script src='js/Shaders.js'></script> 
     <script src='js/plantilla_esfera.js'></script>
     <script src='js/Buffers.js'></script>
     <script src='js/Picking.js'></script>
@@ -222,11 +222,15 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
     mat4.identity(RotationMatrix);
 
     
-    function GetNumAtom(pix)
+    function GetAtom(pix)
     {
         var NumAtom = 0;
+        var atmS=null;
+
         NumAtom= pix[2]*255*255 + pix[1]*255 + pix[0];
-        return NumAtom;
+        atmS= molecule.LstAtoms[NumAtom-1];
+
+        return atmS;
     }
 
 
@@ -675,14 +679,12 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                 {              
                     gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[i]);
                     gl.vertexAttribPointer(currentProgram.vertexPositionAttribute, sphereVertexPositionBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
-
                     gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBuffer[i]);
                     gl.vertexAttribPointer(currentProgram.textureCoordAttribute, sphereVertexColorBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
                     gl.bindBuffer(gl.ARRAY_BUFFER, null);
                    
                     gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexNormalBuffer[i]);
                     gl.vertexAttribPointer(currentProgram.vertexNormalAttribute, sphereVertexNormalBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
-
                     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereVertexIndexBuffer[i]);
                     setMatrixUniforms();
                     gl.drawElements(gl.TRIANGLES, sphereVertexIndexBuffer[i].numItems, gl.UNSIGNED_SHORT, 0);
