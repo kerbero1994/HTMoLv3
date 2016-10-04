@@ -95,7 +95,7 @@ function Atom(number,x,y,z,state,element,nameatom)
     this.ColorName=null;
     this.ColorRGB=null;
     this.ColorRGBDiffuse=null;
-    this.Seleccionado=false;
+    this.Seleccionado=false; //
     this.Representation=null;
 
     this.LstidLinea=[];
