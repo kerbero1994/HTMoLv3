@@ -431,7 +431,7 @@ function Main()
 		totalframes=0;
 		pos=0;
 	    sizeglob=0;
-		readend=4999999;
+		readend=20999999;
 		readstart=0;
 		bndbuffer=0;
 		sizearrayp=0;

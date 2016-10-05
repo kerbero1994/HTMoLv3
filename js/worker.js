@@ -36,6 +36,7 @@
           //Bandera
           var xtc = false;
           var dcd= false;
+          var endianess=false;
 
           //Variables DCD
           var rec_scale64 = false;
@@ -103,6 +104,7 @@
                           //    console.log(part.byteLength);
                           trans += data.byteLength;
                           var tmp = new Uint8Array(part.byteLength + data.byteLength);
+                          console.log(tmp);
                           tmp.set(new Uint8Array(part), 0);
                           tmp.set(new Uint8Array(data), part.byteLength);
                           part = tmp.buffer;
@@ -605,6 +607,31 @@
               return a;
           }
 
+          function swap32(val,endian) { //Esta funcion voltea la endianess segun la bandera endian
+            if(endian)
+            {
+                   return ((val & 0xFF) << 24)
+                    | ((val & 0xFF00) << 8)
+                    | ((val >> 8) & 0xFF00)
+                    | ((val >> 24) & 0xFF);
+            }
+            else //si no hay necesidad de voltearlo lo regresa igual
+              return val;
+            }
+            function swaparray(array,endian) //Para hacer swap a un arreglo
+            {
+              if(endian)
+              {
+                for (var i = 0;i<array.length; i++) {
+                 array[i]=swap32(array[i],endian);
+                }
+              }
+              else
+              {
+                return array;
+              }
+            }
+
           leer = function(part) {
               var doc = new Int32Array(part); // Se ven los bytes como Ints de 4 Bytes
               if (doc[0] + doc[1] == 84) { //Todos los Archivos DCD Empiezan con un 84 seguido de la palabra CORD
@@ -613,51 +640,56 @@
               } else if (doc[0] == 84 && doc[1] == 1146244931) { //Valor de la palabra CORD en Numero
                   console.log("32 bit Recscale" );
                   rec_scale64 = false; //Se desactiva la bandera son enteros comunes 32bits(4 bytes)
-              } else {
+              } else if(swap32(doc[0],true)==84 && swap32(doc[1],true)==1146244931){
+                  endianess=true;
+                  console.log("Need To Change Endianess");
+              }else {
                   throw new Error("DCD: CORD or Initial 84 Not Found");
               }
               if (!rec_scale64) { //Proceso si el archivo maneja enteros de 32bits
-                  hdrbuf = new Int32Array(doc.subarray(2, 22)); //Se Le encabezado(80 Bytes)
+                  hdrbuf = new Int32Array(doc.subarray(2, 22)); //Se Lee encabezado(80 Bytes)
                   console.log(hdrbuf);
                   if (hdrbuf[-1] != 0) { //Si el ultimo valor del encabezado 0 es formato X-PLOR de lo contrario es CHARMM
                       charmm = true;
                   } else {
                       throw new Error("DCD: X-plor Format Not Supported"); //Por Ahora
                   }
-                  n_csets = hdrbuf[0]; //Numero de sets de coordenadas
-                  first_ts = hdrbuf[1]; //Cuadro desde el que inicia la animacion
-                  framefreq = hdrbuf[2]; //Cantidad de Cuadros entre archivos dcd
-                  n_fixed = hdrbuf[8]; // Cantidad De Atomos Fijos
+                  n_csets = swap32(hdrbuf[0],endianess); //Numero de sets de 
+                  first_ts = swap32(hdrbuf[1],endianess); //Cuadro desde el que inicia la animacion
+                  framefreq = swap32(hdrbuf[2],endianess); //Cantidad de Cuadros entre archivos dcd
+                  n_fixed = swap32(hdrbuf[8],endianess); // Cantidad De Atomos Fijos
+                  
 
                   if (n_fixed != 0) {
-                      throw new Error("DCD: Trajectories with Fixed Atoms Not Supported");
+                      throw new Error("DCD: Trajectories with Fixed Atoms are Not Supported");
                   }
 
-                  timestep = hdrbuf[9]; //Cantidad De Cuadros Por segundo
-                  unitcell = hdrbuf[10] == 1; //Indica si Hay Informacion de Unitcell
+                  timestep = swap32(hdrbuf[9],endianess); //Cantidad De Cuadros Por segundo
+                  unitcell = swap32(hdrbuf[10],endianess) == 1; //Indica si Hay Informacion de Unitcell
+                  
                   if(unitcell)
                   {
                     paso=14;
                   }
 
-                  if (doc[22] != 84) { //Estas validaciones verifican el fin del bloque....
+                  if (swap32(doc[22],endianess) != 84) { //Estas validaciones verifican el fin del bloque....
                       throw new Error("DCD:Bad Format");
                   }
-                  if ((doc[23] - 4) % 80 != 0) { //y El inicio del siguiente
+                  if ((swap32(doc[23],endianess) - 4) % 80 != 0) { //y El inicio del siguiente
                       throw new Error("DCD:Bad Format");
                   }
-                  noremarks = doc[23] == 84; //Se verifica si hay remarks 
-                  ntitle = doc[24]; // se lee ntitle
+                  noremarks = swap32(doc[23],endianess) == 84; //Se verifica si hay remarks 
+                  ntitle = swap32(doc[24],endianess); // se lee ntitle
                   var pos=25; //Variable para posicion, A partir de este punto puede haber variaciones
                   dcdtitle = new Uint32Array(doc.subarray(pos, pos+(ntitle*20))); //Se lee dcdtitle
                   pos+=(ntitle*20);
-                  if ((doc[pos] - 4) % 80 != 0 || doc[pos+1] != 4) { //Aqui se valida el fin del bloque
+                  if ((swap32(doc[pos],endianess) - 4) % 80 != 0 || swap32(doc[pos+1],endianess) != 4) { //Aqui se valida el fin del bloque
                       throw new Error("DCD:Bad Format");
                   }
                   pos+=2;
-                  n_atoms = doc[pos];
+                  n_atoms = swap32(doc[pos],endianess);
                   pos++;
-                  if (doc[pos] != 4 || n_atoms!=e.data.natoms) {
+                  if (swap32(doc[pos],endianess) != 4 || n_atoms!=e.data.natoms) {
                       throw new Error("DCD:Bad Format or Numer of Atoms on file are not equal ("+n_atoms+"/"+e.data.natoms+")");
                   }
                   pos+=paso+1;
@@ -688,9 +720,9 @@
                           }*/
                           self.postMessage({
                               cmd: "enviar",
-                              dato: arr.subarray(1,-1),
-                              dato1: arr1.subarray(1,-1),
-                              dato2: arr2.subarray(1,-1),
+                              dato: swaparray(arr.subarray(1,-1),endianess),
+                              dato1: swaparray(arr1.subarray(1,-1),endianess),
+                              dato2: swaparray(arr2.subarray(1,-1),endianess),
                               bndarray: bnd
                           });
                           pos+=n_floats+paso;
