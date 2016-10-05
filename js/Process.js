@@ -95,7 +95,7 @@ function Atom(number,x,y,z,state,element,nameatom)
     this.ColorName=null;
     this.ColorRGB=null;
     this.ColorRGBDiffuse=null;
-    this.Seleccionado=false;
+    this.Seleccionado=false; //
     this.Representation=null;
 
     this.LstidLinea=[];
@@ -110,7 +110,39 @@ function Atom(number,x,y,z,state,element,nameatom)
     this.PositionBWire=0;
     this.BloqueSolid=0;
     this.PositionBSolid=0;
+    ////////////////////////
+
+    this.id=null; //es para poner el órden en el que aparecen
 }
+
+function createBonds(main)
+	{
+		var bond= new Bond();
+	    for (var t in molecule.GetChain())
+	    {
+	        var chn=molecule.GetChain()[t];
+	        for(var r in chn.GetAminoacid())
+	        {
+	            var amn=chn.GetAminoacid()[r];
+	            for(var s in amn.GetAtoms())
+	            {
+	                var atom=amn.GetAtoms()[s];
+	                for(var b in AtomsBonds[atom.NameAtom])
+	                {
+	                    var val=AtomsBonds[atom.NameAtom][b];
+	                    for(var s in amn.GetAtoms())
+	                    {
+	                        var atomb=amn.GetAtoms()[s];
+	                        if(val==atomb.NameAtom)
+	                        {
+	                            bond=main.ObjP.AddBond(bond,atom,atomb);
+	                        }
+	                    }
+	                }
+	            }
+	        }
+	    }
+	}
 
 function Process()
 {
@@ -143,6 +175,7 @@ function Process()
 	    var val,val2;
 	    var AtomCount=0;
 	    var contSkele=0;
+	    var id=0;
 	      
 	    for(var i=0; i<lines.length; ++i)
 	    {
@@ -232,7 +265,10 @@ function Process()
 		        /////////////////////////se añade al array
 		        //alert(atom.NameAtom);
 			   	//AtomArray.push(atom);
-			   	////////////////////////		   	
+			   	////////////////////////
+			   	id++;	
+			   	atom.id=id;
+			   		   	
 		    }
 		    
 	    }

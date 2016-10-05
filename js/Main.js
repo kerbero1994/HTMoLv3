@@ -29,7 +29,6 @@ var fpath;
 
 function Main()
 {
-
 	//-----------------------------------Bloque inicial para declarar el worker----------------------------------
 	if (typeof(Worker)=="undefined")
 	{
@@ -47,39 +46,12 @@ function Main()
         worker1.addEventListener("message", manejadorEventoWorker1, false);
     }
     //----------------------------------------------------------------------------------------------------------------
-        
-	var main=this;
+    var main=this;
 	this.ObjP= new Process();
-
 	//--------------------------Este bloque se va a crear en una función ya que aquí se lee el archivo pdb con la ruta dada-------------------
 	molecule=this.ObjP.ReadFile("1crn.pdb");
+	createBonds(this);	
 
-      var bond= new Bond();
-            for (var t in molecule.GetChain())
-            {
-                 var chn=molecule.GetChain()[t];
-                 for(var r in chn.GetAminoacid())
-                 {
-                       var amn=chn.GetAminoacid()[r];
-                       for(var s in amn.GetAtoms())
-                       {
-                            var atom=amn.GetAtoms()[s];
-                            for(var b in AtomsBonds[atom.NameAtom])
-                            {
-                                  var val=AtomsBonds[atom.NameAtom][b];
-                                  for(var s in amn.GetAtoms())
-                                  {
-
-                                       var atomb=amn.GetAtoms()[s];
-                                       if(val==atomb.NameAtom)
-                                       {
-                                          bond=this.ObjP.AddBond(bond,atom,atomb);
-                                       }
-                                  }
-                            }
-                       }
-                 }
-            }
     //--------------------------------------------------------------------------------------------------------------------------------------------------
 
     AtomosSeleccionados=molecule.LstAtoms;
@@ -104,56 +76,41 @@ function Main()
 		}
 	   }
 	}
-	
+
+	this.Buttons=function()
+	{
+		for(var i=0; i<molecule.LstChain.length; i++)
+		{
+			var chain = molecule.LstChain[i];
+			var button = document.createElement('input');
+			button.type="button";
+			button.value=chain.Name;
+			button.id=chain.Name;
+			button.onclick=ProcesarCadena(i,button);
+			if (button.value!="undefined") 
+			{
+				menu.appendChild(button);
+			}
+
+		}
+
+	}
+
+		
 	this.MakeModel=function(url)
 	{
-		//alert("makeModel");
 	   molecule=main.ObjP.ReadFile(url);	
-	    var bond= new Bond();
-            for (var t in molecule.GetChain())
-            {
-                 var chn=molecule.GetChain()[t];
-                 for(var r in chn.GetAminoacid())
-                 {
-                       var amn=chn.GetAminoacid()[r];
-                       for(var s in amn.GetAtoms())
-                       {
-                            var atom=amn.GetAtoms()[s];
-                            for(var b in AtomsBonds[atom.NameAtom])
-                            {
-                                  var val=AtomsBonds[atom.NameAtom][b];
-                                  for(var s in amn.GetAtoms())
-                                  {
-
-                                       var atomb=amn.GetAtoms()[s];
-                                       if(val==atomb.NameAtom)
-                                       {
-                                          bond=this.ObjP.AddBond(bond,atom,atomb);
-                                       }
-                                  }
-                            }
-                       }
-                 }
-            }
+	    
+	   createBonds(main);
 
 	   initBuffers();
 
 	   if(molecule!=null)
 	   {
 	   	   data.innerHTML="Loading...";
-		   /*
-		   PredictionAndCamera();
-		   main.ObjP.Spheres(chain,main.Obj3D);
-		   main.ObjP.representation.Bonds.MakeBonds(main.ObjP,main.Obj3D);
-		   main.ObjP.representation.Skeleton.Make(main.Obj3D);		   
-
-		   main.Obj3D.CenterObjects(main.ObjP.PointCenter.X,main.ObjP.PointCenter.Y,main.ObjP.PointCenter.Z);
-		   main.Obj3D.DeleteButtons();
-		   */
-			
-
-		   //main.Obj3D.Buttons(molecule);
-		   if(main.ObjP.Model.Frames!=0 && main.ObjP.Model.Frames!=""){
+		  
+		   if(main.ObjP.Model.Frames!=0 && main.ObjP.Model.Frames!="")
+		   {
 		   main.filerequest();	
 		   console.log(trjauto);	   
 		   trjauto=true;
@@ -165,6 +122,163 @@ function Main()
 	   else{
 	   	data.innerHTML='Error: Iccnvalid URL or Connection not available';
 	   }
+	}
+
+	this.Parse=function(txt)
+	{
+		/*
+		elementos separados por coma  o un guión   
+
+		aquí entra el texto para el cuál se realiza el análisis
+		space	=
+		; 		=
+		-		=
+		enter	= 13
+
+		Puedo hacer un array por cada palabra separada por un space ,  ; 
+		
+
+		obtener la primer palabra que va a ser el comando a usar
+		
+		var firstWords = [];
+		for (var i=0;i<codelines.length;i++)
+		{
+		  var codeLine = codelines[i];
+		  var firstWord = codeLine.substr(0, codeLine.indexOf(" "));
+		  firstWords.push(firstWord);
+		}
+
+		*/
+		var comando=txt.substr(0, txt.indexOf(" "));//obtengo la primer palabra que es un comando 
+		//luego voy a obtener todo lo demás 
+		var lines=txt.split(" ");
+		var inst=txt.replace(comando + ' ','');
+
+		if (comando=='select') 
+		{
+			alert("comando select");
+			//obtener todo lo demás antes del ;
+			//alert(inst);
+			//alert(inst.length);		
+			var numAtoms=0;
+			var regex = /(\d+)/g;
+			//alert(inst.match(regex));
+			alert(AtomosSeleccionados.length);
+
+			if (inst=='all') 
+			{
+				AtomosSeleccionados=molecule.LstAtoms;
+			}
+			else
+			{
+				script=inst.match(regex);
+				for(var o in script)
+		        {
+		            if(o==0)
+		            {
+		                AtomosSeleccionados=molecule.LstChain[0].LstAminoAcid[script[0]-1].GetAtoms();
+		                alert(AtomosSeleccionados.length);
+		            }
+		            else
+		            {
+		                 AtomosSeleccionados=AtomosSeleccionados.concat(mmolecule.LstChain[0].LstAminoAcid[script[o]-1].GetAtoms());
+		                 alert(AtomosSeleccionados.length);
+		            }
+		        }
+			}	
+			alert(AtomosSeleccionados.length);		
+	        document.getElementById("Console_output").value='selected atoms: ' + AtomosSeleccionados.length;
+		}
+		else if (comando=='color') 
+		{
+			//alert("comando color");
+			var color=inst;
+			for(var o in AtomosSeleccionados) //son los objetos seleccionados 
+            {
+            	/*
+                var ato=AtomosSeleccionados[o];
+
+
+                ato.Color=LstColors[inst].color;
+                //alert(ato.Color);
+                ato.Mesh.material.color.setHex(ato.Color);
+                */
+            }
+
+		}
+		else if (comando=='show') 
+		{
+			if (inst=='sequence') //para el show sequence
+			{
+				var sqnc='';
+				for(var o in molecule.LstChain) //son los objetos seleccionados  main.oRepresentation.molecule
+            	{
+            		var chain=molecule.LstChain[o];
+            		for(var v in chain.LstAminoAcid) //son los objetos seleccionados  main.oRepresentation.molecule
+	            	{
+	            		if (v==0) 
+	            		{
+	            			sqnc=chain.LstAminoAcid[v].Name + chain.LstAminoAcid[v].Number;
+
+	            		}
+	            		else
+	            		{
+	            			sqnc=sqnc + ', ' + chain.LstAminoAcid[v].Name + chain.LstAminoAcid[v].Number;
+	            		}            		
+
+	            	}
+
+            	}
+            	document.getElementById("Console_output").value=sqnc;
+			}
+			else if(inst=='cpk') //para mostrar el cpk
+			{
+				main.oRepresentation.repre='CPK';
+                main.oRepresentation.Make(main.o3D);
+			}
+			else if(inst=='sb') //para mostrar el cpk
+			{
+				main.oRepresentation.repre='SB';
+                main.oRepresentation.Make(main.o3D);
+			}
+			else if(inst=='bonds') //para mostrar el cpk
+			{
+				main.oRepresentation.repre='Bonds';
+                main.oRepresentation.Make(main.o3D);
+			}
+			else if(inst=='skeleton') //para mostrar el cpk
+			{
+				main.oRepresentation.repre='Skeleton';
+                main.oRepresentation.Make(main.o3D);
+			}
+			else
+			{
+				document.getElementById("Console_output").value='Unknown command';	
+			}
+
+
+		}
+		else
+		{
+			document.getElementById("Console_output").value='Unknown command';
+		}
+
+	}
+
+	this.onTestChange=function(event) 
+	{
+	    var key =  event.which || event.keyCode; //se ponen los dos porque en firefox no sirve keycode
+	    // If the user has pressed enter
+	    if (key == 13) {
+	    	event.preventDefault(); //esta línea es para que no se imprima una nueva línea con el enter
+	    	main.Parse(document.getElementById("Console_input").value.toLowerCase());
+	    	document.getElementById("Console_input").value='';    	
+	        //document.getElementById("Console_input").value =document.getElementById("Console_input").value + "\n*";
+	        return false;
+	    }
+	    else {
+	        return true;
+	    }
 	}
 
 	this.DeleteModel=function()
@@ -302,6 +416,17 @@ function Main()
   		data = document.getElementById("data");
   		zoom = document.getElementById("zoom");
 
+  		//Botones para las representaciones
+  		var buttonOp = document.getElementById( "CPK" ); 
+	    buttonOp.onclick=R_Cpk();
+	      
+	    buttonOp = document.getElementById( "Spheres Bonds" );
+	    buttonOp.onclick=R_SB();
+
+	    buttonOp = document.getElementById( "Bonds" );
+	    buttonOp.onclick=R_B();
+
+		
   		
         if(typeof(URLS) != "undefined")
         { 
@@ -336,10 +461,10 @@ function Main()
         buttontrj.onclick=function()
         {
         	url="http://127.0.0.1:25565/test/prueba.pdb";
-        	//main.DeleteModel();
         	main.MakeModel(url);
         }
-        
+
+        main.Buttons();
       /*
         for(var i in URLS)
 	    {		
@@ -379,15 +504,13 @@ function Main()
         return function(event)
         {
         	//se coloca la ip del servidor y el puerto que se abrió
-        	url = prompt("URL: ", "http://187.140.221.127:25565/test/2vep_md_prot.pdb");
+        	url = prompt("URL: ", "http://127.0.0.1:25565/test/2vep_md_prot.pdb");
 		    if(url!='')
 		    {
 				if(url.length==4)
 				url="http://www.rcsb.org/pdb/files/"+url+".pdb";
-				//alert(url);
 			    try
 			    {
-				  	main.DeleteModel();
 			    	main.MakeModel(url); 
 			    }
 			    catch(e)
@@ -399,7 +522,7 @@ function Main()
 		}
 	}
 
-	this.trajreview=function()
+	this.trajreview=function()  //Esta función no se usa
 	{	
 		alert("help");	
 		trjauto=true;
@@ -547,6 +670,39 @@ function Main()
 
 }
 
+function handle_mousedown(e)
+{
+	alert("entra");
+    window.my_dragging = {};
+    my_dragging.pageX0 = e.pageX;
+    my_dragging.pageY0 = e.pageY;
+    my_dragging.elem = this;
+    my_dragging.offset0 = $(this).offset();
+    function handle_dragging(e){
+        var left = my_dragging.offset0.left + (e.pageX - my_dragging.pageX0);
+        var top = my_dragging.offset0.top + (e.pageY - my_dragging.pageY0);
+        $(my_dragging.elem)
+        .offset({top: top, left: left});
+    }
+    function handle_mouseup(e){
+        $('body')
+        .off('mousemove', handle_dragging)
+        .off('mouseup', handle_mouseup);
+    }
+    $('body')
+    .on('mouseup', handle_mouseup)
+    .on('mousemove', handle_dragging);
+}
+$('Console').mousedown(handle_mousedown);
+
+
+
+
+ $(function() {
+    $( "#Console" ).draggable();
+  });
+
+/*
 $(function ()
 {
 var main= new Main();
@@ -555,3 +711,4 @@ var container = document.getElementById("Contenedor");
 main.MakeMenu(container);
 
 });
+*/
