@@ -690,7 +690,7 @@
                   n_atoms = swap32(doc[pos],endianess);
                   pos++;
                   if (swap32(doc[pos],endianess) != 4 || n_atoms!=e.data.natoms) {
-                      throw new Error("DCD:Bad Format or Numer of Atoms on file are not equal ("+n_atoms+"/"+e.data.natoms+")");
+                      throw new Error("DCD:Bad Format or Number of Atoms on file are not equal (DCD:"+n_atoms+"/Loaded Molecule:"+e.data.natoms+")");
                   }
                   pos+=paso+1;
                   var buff= new Float32Array(part);
