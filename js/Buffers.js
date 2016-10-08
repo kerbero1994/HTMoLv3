@@ -27,7 +27,7 @@ function initBuffers()
     ZoomMotion=Math.ceil(CameraPosition/10);
     CameraPosition=CameraPosition*4;
 
-    NoPaso = 20;
+    NoPaso = 100;
     var NoAtomos = molecule.LstAtoms.length;
     NoBloques = Math.ceil(NoAtomos/NoPaso);
     var Restantes = NoAtomos - ((NoBloques-1) * NoPaso);
@@ -568,7 +568,7 @@ function initBuffers()
     lineVertexPositionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, lineVertexPositionBuffer);
     var linesNormals=[];
-    var colores=[];
+    colores=[];
     for(var t in molecule.LstBonds)
     {
         var o = molecule.LstBonds[t];

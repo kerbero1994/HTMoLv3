@@ -1338,24 +1338,14 @@ function handleMouseDown(event) {
                                     sphereVertexNormalBuffer[atom.BloqueSolid-1].itemSize = 3;
                                     sphereVertexNormalBuffer[atom.BloqueSolid-1].numItems = normalDataN[atom.BloqueSolid-1].length/3;
                                     //alert(101);
-                                }
+}
 
                                 if (LstBS[NBS-1].length==0) 
                                 {
                                     NBS-=1;
                                 }                                
 
-                            }   
-
-
-
-
-
-
-
-
-
-
+                            } 
 
 
                         }

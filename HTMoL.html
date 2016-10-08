@@ -44,7 +44,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
 
     uniform vec3 uPointLightingLocation;
     uniform vec3 uPointLightingColor;
-
+   
     varying vec4 vColor;
 
     void main(void) {
@@ -52,17 +52,25 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
         if (uOffscreen) 
         {
             gl_FragColor = vColor;
-            return;
         }   
         else
         {
-         vec3 lightWeighting;
-            vec3 lightDirection = normalize(uPointLightingLocation - vPosition.xyz);
+           if (vColor.a==0.0) 
+            {
+                gl_FragColor = vec4(1,1,1,0);
+            }
+            else
+            {
+                vec3 lightWeighting;
+                vec3 lightDirection = normalize(uPointLightingLocation - vPosition.xyz);
 
-            float directionalLightWeighting = max(dot(normalize(vTransformedNormal), lightDirection), 0.0);
-            lightWeighting = uAmbientColor + uPointLightingColor * directionalLightWeighting;
-            //gl_FragColor = vColor;
-            gl_FragColor = vec4(vColor.rgb * lightWeighting, vColor.a);
+                float directionalLightWeighting = max(dot(normalize(vTransformedNormal), lightDirection), 0.0);
+                lightWeighting = uAmbientColor + uPointLightingColor * directionalLightWeighting;
+                //gl_FragColor = vColor;
+                gl_FragColor = vec4(vColor.rgb * lightWeighting, vColor.a);
+
+            }
+           
         }
     }
 </script>
@@ -82,20 +90,33 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
     varying vec3 vTransformedNormal;
     varying vec4 vPosition;
 
-    void main(void) {
-        vPosition = uMVMatrix * vec4(aVertexPosition, 1.0);
-        gl_Position = uPMatrix * vPosition;
+    void main(void) 
+    {
 
-
- if (uOffscreen) 
+        if (aVertexColor.a==0.0) 
         {
-            vColor = aVertexColor;
+            return;
         }
         else
         {
-          vColor = aVertexColor;        
-        vTransformedNormal = uNMatrix * aVertexNormal;  
+            vPosition = uMVMatrix * vec4(aVertexPosition, 1.0);
+            gl_Position = uPMatrix * vPosition;
+
+
+            if (uOffscreen) 
+            {
+                vColor = aVertexColor;
+            }
+            else
+            {
+                vColor = aVertexColor;        
+                vTransformedNormal = uNMatrix * aVertexNormal;  
+            }
+
+
         }
+
+       
         
 
         //gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
@@ -288,6 +309,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
     var LstBS=[];
 
     var verticesLineas = [];
+    var colores=[];
 
     //var vec = vec3.create4();
     // vec[0]=4;
@@ -302,7 +324,9 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
 
     function drawScene(diffuse) 
     {
-        gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+       
+
+         gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 1000.0, pMatrix);
@@ -849,7 +873,14 @@ else
         initBuffers();
 
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+        gl.clearDepth(1.0);
+
         gl.enable(gl.DEPTH_TEST);
+        gl.depthFunc(gl.LESS);
+
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
         canvas.onmousedown = handleMouseDown;
         document.onmouseup = handleMouseUp;

@@ -33,51 +33,124 @@ function ProcesarCadena(index,button)
     	{
     		button.style.color=' #ffffff ';
     		molecule.LstChain[index].State='Active'
+
+    		for(var i=0; i<molecule.LstChain[index].LstAminoAcid.length; i++ )
+	    	{
+	    		for(var j=0; j<molecule.LstChain[index].LstAminoAcid[i].LstAtoms.length; j++ )
+	    		{
+	    			var at= molecule.LstChain[index].LstAminoAcid[i].LstAtoms[j];
+	    			//voy a checar cada uno para ver si está en wire o en solid
+	    			//alert(ColorTotal[at.BloqueSolid-1]);
+	    			//alert(at.NameAtom);
+	    			var mul= (at.PositionBSolid - 1)*nColor;
+	    			if (at.Seleccionado==false)  //entonces está en solid
+	    			{
+	    				//del bloque solid
+	    				for(var k=0; k<nColor;)
+	                    {
+	                    	
+	                        ColorTotal[at.BloqueSolid-1].splice(mul + k + 3, 1,  1); //el 0 es para hacerlo transparente
+	                        
+	                        k=k+4;
+	                    }
+	                    //alert(ColorTotal[at.BloqueSolid-1]);
+
+	                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBuffer[at.BloqueSolid-1]);
+	                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ColorTotal[at.BloqueSolid-1]), gl.DYNAMIC_DRAW);
+	                    sphereVertexColorBuffer[at.BloqueSolid-1].itemSize = 4;
+	                    sphereVertexColorBuffer[at.BloqueSolid-1].numItems = ColorTotal[at.BloqueSolid-1].length/4;
+	                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+
+	    			}
+	    			else   //entonces está en el wire
+	    			{
+	    				//del bloque Wire
+	    				for(var k=0; k<nColor;)
+	                    {
+	                    	
+	                        wireColorTotal[at.BloqueWire-1].splice(mul + k + 3, 1,  1); //el 0 es para hacerlo transparente
+	                        
+	                        k=k+4;
+	                    }
+	                    //alert(ColorTotal[at.BloqueSolid-1]);
+
+	                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereWireColorBuffer[at.BloqueWire-1]);
+	                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(wireColorTotal[at.BloqueWire-1]), gl.DYNAMIC_DRAW);
+	                    sphereWireColorBuffer[at.BloqueWire-1].itemSize = 4;
+	                    sphereWireColorBuffer[at.BloqueWire-1].numItems = wireColorTotal[at.BloqueWire-1].length/4;
+	                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+
+	    			}
+
+
+	    		}
+
+    	}
     	}
     	else
     	{
     		button.style.color=' rgb(255,0,0) ';
     		molecule.LstChain[index].State='Inactive'
+
+    		for(var i=0; i<molecule.LstChain[index].LstAminoAcid.length; i++ )
+	    	{
+	    		for(var j=0; j<molecule.LstChain[index].LstAminoAcid[i].LstAtoms.length; j++ )
+	    		{
+	    			var at= molecule.LstChain[index].LstAminoAcid[i].LstAtoms[j];
+	    			//voy a checar cada uno para ver si está en wire o en solid
+	    			//alert(ColorTotal[at.BloqueSolid-1]);
+	    			//alert(at.NameAtom);
+	    			if (at.Seleccionado==false)  //entonces está en solid
+	    			{
+	    				var mul= (at.PositionBSolid - 1)*nColor;
+	    				//quitarlo del bloque solid
+	    				for(var k=0; k<nColor;)
+	                    {
+	                    	
+	                        ColorTotal[at.BloqueSolid-1].splice(mul + k + 3, 1,  0); //el 0 es para hacerlo transparente
+
+	                        
+	                        k=k+4;
+	                    }
+	                    //alert(ColorTotal[at.BloqueSolid-1]);
+
+	                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBuffer[at.BloqueSolid-1]);
+	                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ColorTotal[at.BloqueSolid-1]), gl.DYNAMIC_DRAW);
+	                    sphereVertexColorBuffer[at.BloqueSolid-1].itemSize = 4;
+	                    sphereVertexColorBuffer[at.BloqueSolid-1].numItems = ColorTotal[at.BloqueSolid-1].length/4;
+	                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+
+	    			}
+	    			else   //entonces está en el wire
+	    			{
+	    				//del bloque Wire
+	    				for(var k=0; k<nColor;)
+	                    {
+	                    	
+	                        wireColorTotal[at.BloqueWire-1].splice(mul + k + 3, 1,  0); //el 0 es para hacerlo transparente
+	                        
+	                        k=k+4;
+	                    }
+	                    //alert(ColorTotal[at.BloqueSolid-1]);
+
+	                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereWireColorBuffer[at.BloqueWire-1]);
+	                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(wireColorTotal[at.BloqueWire-1]), gl.DYNAMIC_DRAW);
+	                    sphereWireColorBuffer[at.BloqueWire-1].itemSize = 4;
+	                    sphereWireColorBuffer[at.BloqueWire-1].numItems = wireColorTotal[at.BloqueWire-1].length/4;
+	                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+	    			}
+
+
+	    		}
+
+	    	}
     	}
-    	/*
-    	for(var i=0; i<molecule.LstChain[index].LstAminoAcid.length; i++ )
-    	{
-    		for(var j=0; j<molecule.LstChain[index].LstAminoAcid[i].LstAtoms.length; j++ )
-    		{
-    			var at= molecule.LstChain[index].LstAminoAcid[i].LstAtoms[j];
-    			//voy a checar cada uno para ver si está en wire o en solid
-    			//alert(ColorTotal[at.BloqueSolid-1]);
-    			//alert(at.NameAtom);
-    			if (at.Seleccionado==false)  //entonces está en solid
-    			{
-    				for(var k=0; k<nColor;)
-                    {
-                    	var mul= (at.PositionBSolid - 1)*nColor;
-                        ColorTotal[at.BloqueSolid-1].splice(mul + k + 3, 1,  0); //el 0 es para hacerlo transparente
-
-                        
-                        k=k+4;
-                    }
-                    //alert(ColorTotal[at.BloqueSolid-1]);
-
-                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBuffer[at.BloqueSolid-1]);
-                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ColorTotal[at.BloqueSolid-1]), gl.DYNAMIC_DRAW);
-                    sphereVertexColorBuffer[at.BloqueSolid-1].itemSize = 4;
-                    sphereVertexColorBuffer[at.BloqueSolid-1].numItems = ColorTotal[at.BloqueSolid-1].length/4;
-                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-
-    			}
-    			else
-    			{
-
-
-    			}
-
-
-    		}
-
-    	}*/
+    	
+    	
 	    //alert("entra ProcesarCadena:"+index);
     }
 }

@@ -56,6 +56,9 @@
         program.textureCoordAttribute = gl.getAttribLocation(program, "aVertexColor");
         gl.enableVertexAttribArray(program.textureCoordAttribute);
 
+        program.option = gl.getAttribLocation(program, "aOption");
+        gl.enableVertexAttribArray(program.option);
+
         program.pMatrixUniform = gl.getUniformLocation(program, "uPMatrix");
         program.mvMatrixUniform = gl.getUniformLocation(program, "uMVMatrix");
         program.nMatrixUniform = gl.getUniformLocation(program, "uNMatrix");

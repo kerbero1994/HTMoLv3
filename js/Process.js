@@ -38,6 +38,7 @@ function Bond()
 {
    this.LstAtoms=[];
    this.id=0;
+   this.State=null; ////////////////////////////////////////////////////////////////////////
 }
 
 function BondSkeleton()
@@ -292,6 +293,7 @@ function Process()
 			bond.LstAtoms.push(atom);
 			bond.LstAtoms.push(union);
 			bond.id=contBonds;
+			bond.State='Active';
 			atom.LstidLinea.push(contBonds);
 			union.LstidLinea.push(contBonds);
 
