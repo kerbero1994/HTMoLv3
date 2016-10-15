@@ -77,8 +77,20 @@ function Main()
 	   }
 	}
 
+	this.DeleteButtons = function()
+	{
+		for(var i=0; i<LstBtnsChain.length;i++)
+		{
+			menu.removeChild(LstBtnsChain[i]);
+		}
+		
+
+	}
+
+
 	this.Buttons=function()
 	{
+		LstBtnsChain=[];
 		for(var i=0; i<molecule.LstChain.length; i++)
 		{
 			var chain = molecule.LstChain[i];
@@ -90,6 +102,7 @@ function Main()
 			if (button.value!="undefined") 
 			{
 				menu.appendChild(button);
+				LstBtnsChain.push(button);
 			}
 
 		}
@@ -213,10 +226,14 @@ function Main()
                                     wireColorTotal[NBW-1]=new Array();
                                     wireindexData[NBW-1]=new Array();
 
+                                    ChainIndexW[NBW - 1] = new Array();
+
                                     sphereWirePositionBuffer[NBW-1]=new Array();
                                     sphereWireColorBuffer[NBW-1]=new Array();
                                     sphereWireIndexBuffer[NBW-1]=new Array();
                                     sphereWireNormalBuffer[NBW-1]=new Array();
+
+                                    ChainBufferW[NBW - 1] = new Array();
                                 }
 
                             }
@@ -311,6 +328,9 @@ function Main()
                                 wireColorTotal[NBW-1].push(atom.ColorRGB[2]);
                                 wireColorTotal[NBW-1].push(atom.ColorRGB[3]);
                                 i=i+4;
+
+                                ChainIndexW[NBW - 1].push(atom.idChain);
+                                ChainIndexW[NBW - 1].push(atom.idChain);
                             }
                             //alert(nIndices);
                             for(var i=0; i<nIndices;i++)
@@ -331,6 +351,13 @@ function Main()
                             sphereWireColorBuffer[NBW-1].itemSize = 4;
                             sphereWireColorBuffer[NBW-1].numItems = (wireColorTotal[NBW-1].length / 4) * 1;
                             //alert(64);
+
+                            ChainBufferW[NBW - 1] = gl.createBuffer();
+                            gl.bindBuffer(gl.ARRAY_BUFFER, ChainBufferW[NBW - 1]);
+                            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ChainIndexW[NBW - 1]), gl.DYNAMIC_DRAW);
+                            ChainBufferW[NBW - 1].itemSize = 2;
+                            ChainBufferW[NBW - 1].numItems = (ChainIndexW[NBW - 1].length / 2) * 1;
+
                             sphereWireIndexBuffer[NBW-1]=gl.createBuffer();
                             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereWireIndexBuffer[NBW-1]);
                             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(wireindexData[NBW-1]), gl.DYNAMIC_DRAW);
@@ -354,6 +381,7 @@ function Main()
                                 normalDataN[NBS-1].splice( (atom.PositionBSolid-1)*nVertices,nVertices);
                                 ColorTotal[NBS-1].splice( (atom.PositionBSolid-1)*nColor,nColor);
                                 indexData[NBS-1].splice((atom.PositionBSolid-1)*nIndices,nIndices);
+                                ChainIndex[NBS - 1].splice((atom.PositionBSolid - 1) * nChain, nChain);
 
 
                                 LstBS[NBS-1].pop() //se quita el atom del solid
@@ -373,6 +401,11 @@ function Main()
                                     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ColorTotal[NBS-1]), gl.DYNAMIC_DRAW);
                                     sphereVertexColorBuffer[NBS-1].numItems = ColorTotal[NBS-1].length/4;
                                     gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+                                    gl.bindBuffer(gl.ARRAY_BUFFER, ChainBuffer[NBS - 1]);
+                                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ChainIndex[NBS - 1]), gl.DYNAMIC_DRAW);
+                                    ChainBuffer[NBS - 1].itemSize = 2;
+                                    ChainBuffer[NBS - 1].numItems = (ChainIndex[NBS - 1].length / 2) * 1;
 
                                     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereVertexIndexBuffer[NBS-1]);
                                     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexData[NBS-1]), gl.DYNAMIC_DRAW);
@@ -396,6 +429,11 @@ function Main()
                                     ColorTotal[atom.BloqueSolid-1].splice( ((atom.PositionBSolid-1)*nColor)+i,            1, ColorTotal[NBS-1][ColorTotal[NBS-1].length - nColor + i ] );  
                                 }
 
+                                for (var i = 0; i < nChain; i++) 
+                                {
+                                    ChainIndex[atom.BloqueSolid - 1].splice(((atom.PositionBSolid - 1) * nChain) + i, 1, ChainIndex[NBS - 1][ChainIndex[NBS - 1].length - nChain + i]);
+                                } 
+
                                                               
                                 //los índices sólo quito los indices últimos del último bloque
                                 indexData[NBS-1].splice( indexData[NBS-1].length - nIndices ,nIndices);
@@ -404,6 +442,7 @@ function Main()
                                 vertexPositionData[NBS-1].splice(vertexPositionData[NBS-1].length - nVertices,nVertices);
                                 normalDataN[NBS-1].splice(normalDataN[NBS-1].length - nVertices,nVertices);
                                 ColorTotal[NBS-1].splice(ColorTotal[NBS-1].length - nColor,nColor);
+                                ChainIndex[NBS - 1].splice(ChainIndex[NBS - 1].length - nChain, nChain);
 
                                 LstBS[NBS-1][ LstBS[NBS-1].length-1 ].BloqueSolid=atom.BloqueSolid;
                                 LstBS[NBS-1][ LstBS[NBS-1].length-1 ].PositionBSolid=atom.PositionBSolid;
@@ -423,6 +462,11 @@ function Main()
                                     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ColorTotal[NBS-1]), gl.DYNAMIC_DRAW);
                                     sphereVertexColorBuffer[NBS-1].numItems = ColorTotal[NBS-1].length/4;
                                     gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+                                    gl.bindBuffer(gl.ARRAY_BUFFER, ChainBuffer[NBS - 1]);
+                                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ChainIndex[NBS - 1]), gl.DYNAMIC_DRAW);
+                                    ChainBuffer[NBS - 1].itemSize = 2;
+                                    ChainBuffer[NBS - 1].numItems = (ChainIndex[NBS - 1].length / 2) * 1;
 
                                     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereVertexIndexBuffer[NBS-1]);
                                     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexData[NBS-1]), gl.DYNAMIC_DRAW);
@@ -452,6 +496,11 @@ function Main()
                                         sphereVertexColorBuffer[NBS-1].numItems = ColorTotal[NBS-1].length/4;
                                         gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
+                                        gl.bindBuffer(gl.ARRAY_BUFFER, ChainBuffer[NBS - 1]);
+	                                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ChainIndex[NBS - 1]), gl.DYNAMIC_DRAW);
+	                                    ChainBuffer[NBS - 1].itemSize = 2;
+	                                    ChainBuffer[NBS - 1].numItems = (ChainIndex[NBS - 1].length / 2) * 1;
+
                                         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereVertexIndexBuffer[NBS-1]);
                                         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexData[NBS-1]), gl.DYNAMIC_DRAW);
                                         sphereVertexIndexBuffer[NBS-1].itemSize = 1;
@@ -474,6 +523,11 @@ function Main()
                                     sphereVertexColorBuffer[atom.BloqueSolid-1].itemSize = 4;
                                     sphereVertexColorBuffer[atom.BloqueSolid-1].numItems = ColorTotal[atom.BloqueSolid-1].length/4;
                                     gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+                                    gl.bindBuffer(gl.ARRAY_BUFFER, ChainBuffer[atom.BloqueSolid - 1]);
+                                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ChainIndex[atom.BloqueSolid - 1]), gl.DYNAMIC_DRAW);
+                                    ChainBuffer[atom.BloqueSolid - 1].itemSize = 2;
+                                    ChainBuffer[atom.BloqueSolid - 1].numItems = (ChainIndex[atom.BloqueSolid - 1].length / 2) * 1;
 
                                     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereVertexIndexBuffer[atom.BloqueSolid-1]);
                                     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexData[atom.BloqueSolid-1]), gl.DYNAMIC_DRAW);
@@ -784,8 +838,10 @@ function Main()
         var buttontrj = document.getElementById( "trajauto" ); 
         buttontrj.onclick=function()
         {
+        	main.DeleteButtons()
         	url="http://127.0.0.1:25565/test/prueba.pdb";
         	main.MakeModel(url);
+        	main.Buttons();
         }
 
         main.Buttons();

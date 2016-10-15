@@ -34,6 +34,25 @@ function ProcesarCadena(index,button)
     		button.style.color=' #ffffff ';
     		molecule.LstChain[index].State='Active'
 
+    		var pos=index+1;
+
+            for(var k=0; k<ArrayIndx.length; k++)
+            {
+                if (pos==ArrayIndx[k]) 
+                {
+                    ArrayIndx.splice( k, 1 );
+                }
+
+            }
+            ArrayIndx.push(0);
+                       
+            var u_Array = gl.getUniformLocation(program, 'uIntArray');
+
+            gl.uniform1fv(u_Array, ArrayIndx);
+
+            ArrayIndx.pop();
+
+            
     		for(var i=0; i<molecule.LstChain[index].LstAminoAcid.length; i++ )
 	    	{
 	    		for(var j=0; j<molecule.LstChain[index].LstAminoAcid[i].LstAtoms.length; j++ )
@@ -42,6 +61,8 @@ function ProcesarCadena(index,button)
 	    			//voy a checar cada uno para ver si está en wire o en solid
 	    			//alert(ColorTotal[at.BloqueSolid-1]);
 	    			//alert(at.NameAtom);
+	    			at.State='Active';
+                    /*
 	    			var mul= (at.PositionBSolid - 1)*nColor;
 	    			if (at.Seleccionado==false)  //entonces está en solid
 	    			{
@@ -83,18 +104,27 @@ function ProcesarCadena(index,button)
 
 
 	    			}
-
+	    			*/
 
 	    		}
-
-    	}
+    		}
+    		
     	}
     	else
     	{
     		button.style.color=' rgb(255,0,0) ';
     		molecule.LstChain[index].State='Inactive'
 
-    		for(var i=0; i<molecule.LstChain[index].LstAminoAcid.length; i++ )
+    	
+    		ArrayIndx.push(index+1);
+
+            //alert(ArrayIndx);
+
+            var u_Array = gl.getUniformLocation(program, 'uIntArray');
+
+            gl.uniform1fv(u_Array, ArrayIndx);          
+
+           	for(var i=0; i<molecule.LstChain[index].LstAminoAcid.length; i++ )
 	    	{
 	    		for(var j=0; j<molecule.LstChain[index].LstAminoAcid[i].LstAtoms.length; j++ )
 	    		{
@@ -102,18 +132,22 @@ function ProcesarCadena(index,button)
 	    			//voy a checar cada uno para ver si está en wire o en solid
 	    			//alert(ColorTotal[at.BloqueSolid-1]);
 	    			//alert(at.NameAtom);
+                    at.State='Inactive';
+                    /*
 	    			if (at.Seleccionado==false)  //entonces está en solid
 	    			{
 	    				var mul= (at.PositionBSolid - 1)*nColor;
+
+                       
 	    				//quitarlo del bloque solid
-	    				for(var k=0; k<nColor;)
-	                    {
+	    				//for(var k=0; k<nColor;)
+	                    //{
 	                    	
-	                        ColorTotal[at.BloqueSolid-1].splice(mul + k + 3, 1,  0); //el 0 es para hacerlo transparente
+	                        ColorTotal[at.BloqueSolid-1].splice(mul, nColor,  Arr); //el 0 es para hacerlo transparente
 
 	                        
-	                        k=k+4;
-	                    }
+	                        //k=k+4;
+	                    //}
 	                    //alert(ColorTotal[at.BloqueSolid-1]);
 
 	                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBuffer[at.BloqueSolid-1]);
@@ -127,6 +161,7 @@ function ProcesarCadena(index,button)
 	    			else   //entonces está en el wire
 	    			{
 	    				//del bloque Wire
+                        var mul= (at.PositionBWire - 1)*nColor;
 	    				for(var k=0; k<nColor;)
 	                    {
 	                    	
@@ -143,13 +178,32 @@ function ProcesarCadena(index,button)
 	                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
 	    			}
+                    //Ahora se procesan los enlaces de cáda átomo
+                    for(var bnd=0; bnd<at.LstLinea.length; bnd++)
+                    {
+                        //alert(at.LstLinea.length);
+                        if (at.LstLinea[bnd].State=='Active') //sólo se apaga si está visible la linea
+                        {
+                            at.LstLinea[bnd].State='Inactive';
+                            var pos=at.LstLinea[bnd].id * 8;  //son 8 por que por cada línea se procesan 4 por cada uno de los dos puntos de sus extremos
+                            colores.splice( pos + 3, 1, 0);              // colores es el arreglo de colores de los vértices de las líneas de los enlaces
+                            colores.splice( pos + 7, 1, 0);
 
+                        }
+
+                    }
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, colorVertexBuffer);      
+                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colores), gl.DYNAMIC_DRAW);
+                    colorVertexBuffer.itemSize=4;
+                    colorVertexBuffer.numItems=colores.length/4;*/
 
 	    		}
 
 	    	}
-    	}
-    	
+
+
+    	}    	
     	
 	    //alert("entra ProcesarCadena:"+index);
     }

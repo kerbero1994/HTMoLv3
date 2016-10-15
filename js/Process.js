@@ -114,6 +114,8 @@ function Atom(number,x,y,z,state,element,nameatom)
     ////////////////////////
 
     this.id=null; //es para poner el órden en el que aparecen
+
+    this.idChain=null;
 }
 
 function createBonds(main)
@@ -177,6 +179,7 @@ function Process()
 	    var AtomCount=0;
 	    var contSkele=0;
 	    var id=0;
+	    var ChainCont=1;
 	      
 	    for(var i=0; i<lines.length; ++i)
 	    {
@@ -225,6 +228,7 @@ function Process()
 					cmpChain=lines[i].substr(20,2);
 					this.Model.LstChain.push(chain);
 					chain=new Chain(cmpChain,'Active');
+					ChainCont=ChainCont + 1;
 				}		
 		        aminoacid.LstAtoms.push(atom);	       
 			    this.Model.LstAtoms.push(atom);
@@ -269,6 +273,7 @@ function Process()
 			   	////////////////////////
 			   	id++;	
 			   	atom.id=id;
+			   	atom.idChain=ChainCont;
 			   		   	
 		    }
 		    

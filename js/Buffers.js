@@ -27,7 +27,7 @@ function initBuffers()
     ZoomMotion=Math.ceil(CameraPosition/10);
     CameraPosition=CameraPosition*4;
 
-    NoPaso = 100;
+    NoPaso = 20;
     var NoAtomos = molecule.LstAtoms.length;
     NoBloques = Math.ceil(NoAtomos/NoPaso);
     var Restantes = NoAtomos - ((NoBloques-1) * NoPaso);
@@ -61,6 +61,7 @@ function initBuffers()
         ColorTotal[0]=[];
         indexData[0]=[];
 
+        ChainIndex[0]=[];
 
         LstBS[0]=new Array();
         for(var i=0; i<NoAtomos; i++)
@@ -121,6 +122,9 @@ function initBuffers()
                 ColorTotalDiffuse[0].push(molecule.LstAtoms[apuntador].ColorRGBDiffuse[2]);
                 ColorTotalDiffuse[0].push(1);
 
+                ChainIndex[0].push(molecule.LstAtoms[apuntador].idChain);
+                ChainIndex[0].push(molecule.LstAtoms[apuntador].idChain);
+
 
             }
             //ColorTotalDiffuse[0].push(molecule.LstAtoms[apuntador].ColorRGBDiffuse);
@@ -177,6 +181,12 @@ function initBuffers()
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
         //alert("ColorTotal: "+ ColorTotal[0].length);
 
+        ChainBuffer[0] = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, ChainBuffer[0]);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ChainIndex[0]), gl.DYNAMIC_DRAW);
+        ChainBuffer[0].itemSize = 2;
+        ChainBuffer[0].numItems = ChainIndex[0].length/2;
+
         sphereVertexIndexBuffer[0] = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereVertexIndexBuffer[0]);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexData[0]), gl.DYNAMIC_DRAW);
@@ -199,6 +209,12 @@ function initBuffers()
         sphereVertexColorBufferDiffuse[0].numItems = ColorTotalDiffuse[0].length/4;
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
         //alert("ColorDiffuse: "+ColorTotalDiffuse[0].length);
+
+        ChainBufferDif[0] = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, ChainBufferDif[0]);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ChainIndex[0]), gl.DYNAMIC_DRAW);
+        ChainBufferDif[0].itemSize = 2;
+        ChainBufferDif[0].numItems = ChainIndex[0].length/2;
 
         sphereDifufusePositionBuffer[0] = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, sphereDifufusePositionBuffer[0]);
@@ -237,6 +253,8 @@ function initBuffers()
             normalDataND[i]=new Array();
             indexDataD[i]=new Array();
             LstBS[i]=new Array();
+
+            ChainIndex[i]=new Array();
 
        
                 /*
@@ -305,6 +323,9 @@ function initBuffers()
                         ColorTotalDiffuse[i].push(molecule.LstAtoms[apuntador].ColorRGBDiffuse[2]);
                         ColorTotalDiffuse[i].push(1);
 
+                        ChainIndex[i].push(molecule.LstAtoms[apuntador].idChain);
+                        ChainIndex[i].push(molecule.LstAtoms[apuntador].idChain);
+
                         //ColorDiffuse=ColorDiffuse.concat(molecule.LstAtoms[apuntador].ColorRGBDiffuse);
                     }
                     //alert("vertices: " + vertexPositionData[i].length);
@@ -363,6 +384,12 @@ function initBuffers()
                 sphereVertexColorBuffer[i].itemSize = 4;
                 sphereVertexColorBuffer[i].numItems = ColorTotal[i].length/4;
 
+                ChainBuffer[i] = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, ChainBuffer[i]);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ChainIndex[i]), gl.DYNAMIC_DRAW);
+                ChainBuffer[i].itemSize = 2;
+                ChainBuffer[i].numItems = ChainIndex[i].length/2;
+
                 sphereVertexIndexBuffer[i] = gl.createBuffer();
                 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereVertexIndexBuffer[i]);
                 gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexData[i]), gl.DYNAMIC_DRAW);
@@ -384,6 +411,12 @@ function initBuffers()
                 sphereVertexColorBufferDiffuse[i].numItems = ColorTotalDiffuse[i].length/4;
                 gl.bindBuffer(gl.ARRAY_BUFFER, null);
                 //alert("ColorDiffuse: "+ColorTotalDiffuse[0].length);
+
+                ChainBufferDif[i] = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, ChainBufferDif[i]);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ChainIndex[i]), gl.DYNAMIC_DRAW);
+                ChainBufferDif[i].itemSize = 2;
+                ChainBufferDif[i].numItems = ChainIndex[i].length/2;
 
                 sphereDifufusePositionBuffer[i] = gl.createBuffer();
                 gl.bindBuffer(gl.ARRAY_BUFFER, sphereDifufusePositionBuffer[i]);
@@ -467,6 +500,9 @@ function initBuffers()
                         ColorTotalDiffuse[i].push(molecule.LstAtoms[apuntador].ColorRGBDiffuse[2]);
                         ColorTotalDiffuse[i].push(1);
 
+                        ChainIndex[i].push(molecule.LstAtoms[apuntador].idChain);
+                        ChainIndex[i].push(molecule.LstAtoms[apuntador].idChain);
+
                         //ColorDiffuse=ColorDiffuse.concat(molecule.LstAtoms[apuntador].ColorRGBDiffuse);
                     }
                     //ColorTotalDiffuse[i]=ColorTotalDiffuse[i].concat(molecule.LstAtoms[apuntador].ColorRGBDiffuse); //estas son las líneas que se congelan
@@ -516,6 +552,12 @@ function initBuffers()
                 sphereVertexColorBuffer[i].itemSize = 4;
                 sphereVertexColorBuffer[i].numItems = ColorTotal[i].length/4;
 
+                ChainBuffer[i] = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, ChainBuffer[i]);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ChainIndex[i]), gl.DYNAMIC_DRAW);
+                ChainBuffer[i].itemSize = 2;
+                ChainBuffer[i].numItems = ChainIndex[i].length/2;
+
                 sphereVertexIndexBuffer[i] = gl.createBuffer();
                 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereVertexIndexBuffer[i]);
                 gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexData[i]), gl.DYNAMIC_DRAW);
@@ -537,6 +579,12 @@ function initBuffers()
                 sphereVertexColorBufferDiffuse[i].numItems = ColorTotalDiffuse[i].length/4;
                 gl.bindBuffer(gl.ARRAY_BUFFER, null);
                 //alert("ColorDiffuse: "+ColorTotalDiffuse[0].length);
+
+                ChainBufferDif[i] = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, ChainBufferDif[i]);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ChainIndex[i]), gl.DYNAMIC_DRAW);
+                ChainBufferDif[i].itemSize = 2;
+                ChainBufferDif[i].numItems = ChainIndex[i].length/2;
 
                 sphereDifufusePositionBuffer[i] = gl.createBuffer();
                 gl.bindBuffer(gl.ARRAY_BUFFER, sphereDifufusePositionBuffer[i]);
@@ -592,16 +640,29 @@ function initBuffers()
         colores.push(1);
         colores.push(1);
         colores.push(1);
+        /////////////////////////
+        if ( o.LstAtoms[0].idChain ==  o.LstAtoms[1].idChain  ) 
+        {
+            ChainIndexB.push( o.LstAtoms[0].idChain );
+            ChainIndexB.push( o.LstAtoms[0].idChain );
+            ChainIndexB.push( o.LstAtoms[0].idChain );
+            ChainIndexB.push( o.LstAtoms[0].idChain );
+        }
+        else
+        {
+            ChainIndexB.push( 0.5 );
+            ChainIndexB.push( 0.5 );
+            ChainIndexB.push( 0.5 );
+            ChainIndexB.push( 0.5 );
+        }
 
     }
-            //alert(vertices.length);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verticesLineas), gl.DYNAMIC_DRAW);
     lineVertexPositionBuffer.itemSize = 3;
     lineVertexPositionBuffer.numItems = verticesLineas.length/3;
     
     colorVertexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, colorVertexBuffer);  
-    
+    gl.bindBuffer(gl.ARRAY_BUFFER, colorVertexBuffer);      
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colores), gl.DYNAMIC_DRAW);
     colorVertexBuffer.itemSize=4;
@@ -612,6 +673,12 @@ function initBuffers()
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(linesNormals), gl.DYNAMIC_DRAW);
     lineNormalBuffer.itemSize=3;
     lineNormalBuffer.numItems=linesNormals.length/3;
+
+    ChainBufferB = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, ChainBufferB); 
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ChainIndexB), gl.DYNAMIC_DRAW);
+    ChainBufferB.itemSize=2;
+    ChainBufferB.numItems=ChainIndexB.length/2;   
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 

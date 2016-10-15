@@ -25,8 +25,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
     <script src="js/glMatrix.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/Diffuses.js"></script>
-    <script src="js/ButtonsFunctions.js"></script>
-  
+    <script src="js/ButtonsFunctions.js"></script>  
 
     <link rel='stylesheet' href='styles/sizeHTMol.css' media='screen'>  
 
@@ -79,6 +78,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
     attribute vec3 aVertexPosition;
     attribute vec3 aVertexNormal;
     attribute vec4 aVertexColor;
+    attribute vec2 aVertexOption;
 
     uniform mat4 uMVMatrix;
     uniform mat4 uPMatrix;
@@ -86,38 +86,62 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
 
     uniform bool uOffscreen;
 
+    uniform float uIntArray[100];
+    bool vPaint=true;
+
     varying vec4 vColor;
     varying vec3 vTransformedNormal;
     varying vec4 vPosition;
 
     void main(void) 
     {
-
-        if (aVertexColor.a==0.0) 
-        {
-            return;
-        }
-        else
-        {
-            vPosition = uMVMatrix * vec4(aVertexPosition, 1.0);
-            gl_Position = uPMatrix * vPosition;
-
-
+   
             if (uOffscreen) 
             {
+                vPosition = uMVMatrix * vec4(aVertexPosition, 1.0);
+                gl_Position = uPMatrix * vPosition;
                 vColor = aVertexColor;
             }
             else
             {
-                vColor = aVertexColor;        
-                vTransformedNormal = uNMatrix * aVertexNormal;  
-            }
+                if (aVertexColor.a==0.0) 
+                {
+                    return;
+                }
+                else
+                {  
+                    vPaint=true;
 
+                    for(int i=0;i<8;i++)
+                    {
+                        if (uIntArray[i] == 0.0  ) 
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            if(aVertexOption[1] == uIntArray[i] )
+                            {
+                                vPaint=false;
+                                break;
+                            }                    
+                        }
+                    }
 
-        }
+                    if (vPaint)
+                    {
+                        vPosition = uMVMatrix * vec4(aVertexPosition, 1.0);
+                        gl_Position = uPMatrix * vPosition;
+                        vColor = aVertexColor;        
+                        vTransformedNormal = uNMatrix * aVertexNormal;  
+                    }   
+                    else
+                    {
+                        return;
+                    }             
+                }
 
-       
-        
+            }       
 
         //gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
         //vColor = aVertexColor;
@@ -171,6 +195,9 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
     //var nColor= 64;
     var nIndices= 1536; //se le suma 289 para hacer el offset 
     //var nIndices= 54;
+    var nChain=578;
+
+    var LstBtnsChain = [] //es para los botones de las cadenas
 
     ///////////////////////estos radios son para las esferas CPK dependiendo del elemento
     var radiusH = 1.2;
@@ -264,6 +291,8 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
     var sphereVertexIndexBuffer=[];
     var sphereVertexColorBuffer=[];
 
+    var ChainBuffer=[];  //es para asignarle a cáda vértice a qué cadena le corresponde
+
     var vertexPositionData = [[]];
     var ColorTotal = [[]];
     var indexData = [[]];
@@ -276,6 +305,11 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
     var sphereWireIndexBuffer=[];
     var sphereWireColorBuffer=[];
 
+    var ChainBufferW=[];  //es para asignarle a cáda vértice a qué cadena le corresponde
+    var ChainIndexW=[];
+    ChainBufferW[0]=new Array();
+    ChainIndexW[0]=new Array();
+
     var wirePositionData = [[]];
     var wireColorTotal = [[]];
     var wireindexData = [[]];
@@ -287,12 +321,22 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
     var sphereDiffuseIndexBuffer=[];
     var sphereVertexColorBufferDiffuse=[];
 
+    var ChainBufferDif=[];  //es para asignarle a cáda vértice a qué cadena le corresponde
+
     var vertexPositionDataD = [[]];
     var indexDataD = [[]];
     var normalDataND= [[]];
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////// PARA LOS ENLACES /////////////////////////////////////////////7
+    var ChainBufferB=[];
+
+    var colorVertexBuffer= null; //es para el buffer de los enlaces
+
+    var ChainIndexB=[]; //para los enlaces
    
 
+/////////////////////////////////////////////////////////////////////////////////
 
     var normalData = [];
 
@@ -310,7 +354,11 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
 
     var verticesLineas = [];
     var colores=[];
+    var ChainIndex=[];
 
+    var ArrayIndx=[]; //variable para las cadenas que se apagan y prenden
+
+        
     //var vec = vec3.create4();
     // vec[0]=4;
     // vec[1]=3;
@@ -649,6 +697,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                     gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBuffer[i]);
                     gl.vertexAttribPointer(currentProgram.textureCoordAttribute, sphereVertexColorBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
                     gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                    
                    
                     gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexNormalBuffer[i]);
                     gl.vertexAttribPointer(currentProgram.vertexNormalAttribute, sphereVertexNormalBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
@@ -687,6 +736,10 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                     
                     gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBufferDiffuse[i]);
                     gl.vertexAttribPointer(currentProgram.textureCoordAttribute, sphereVertexColorBufferDiffuse[i].itemSize, gl.FLOAT, false, 0, 0);
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, ChainBufferDif[i]);
+                    gl.vertexAttribPointer(currentProgram.Opcion, ChainBufferDif[i].itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
                   
                     gl.bindBuffer(gl.ARRAY_BUFFER, sphereDiffuseNormalBuffer[i]);
                     gl.vertexAttribPointer(currentProgram.vertexNormalAttribute, sphereDiffuseNormalBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
@@ -704,12 +757,18 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                 {              
                     gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[i]);
                     gl.vertexAttribPointer(currentProgram.vertexPositionAttribute, sphereVertexPositionBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
+
                     gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBuffer[i]);
                     gl.vertexAttribPointer(currentProgram.textureCoordAttribute, sphereVertexColorBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, ChainBuffer[i]);
+                    gl.vertexAttribPointer(currentProgram.Opcion, ChainBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
                     gl.bindBuffer(gl.ARRAY_BUFFER, null);
                    
                     gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexNormalBuffer[i]);
                     gl.vertexAttribPointer(currentProgram.vertexNormalAttribute, sphereVertexNormalBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
+
                     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereVertexIndexBuffer[i]);
                     setMatrixUniforms();
                     gl.drawElements(gl.TRIANGLES, sphereVertexIndexBuffer[i].numItems, gl.UNSIGNED_SHORT, 0);
@@ -727,6 +786,10 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                         gl.bindBuffer(gl.ARRAY_BUFFER, sphereWireColorBuffer[i]);
                         gl.vertexAttribPointer(currentProgram.textureCoordAttribute, 4, gl.FLOAT, false, 0, 0);
 
+                        gl.bindBuffer(gl.ARRAY_BUFFER, ChainBufferW[i]);
+                        gl.vertexAttribPointer(currentProgram.Opcion, ChainBufferW[i].itemSize, gl.FLOAT, false, 0, 0);
+                        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
                         gl.bindBuffer(gl.ARRAY_BUFFER, sphereWireNormalBuffer[i]);
                         gl.vertexAttribPointer(currentProgram.vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
                         
@@ -741,6 +804,10 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                  //////////////////////////////////////////////////////////////////lineas
                     gl.bindBuffer(gl.ARRAY_BUFFER, colorVertexBuffer);
                     gl.vertexAttribPointer(currentProgram.textureCoordAttribute, colorVertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, ChainBufferB);
+                    gl.vertexAttribPointer(currentProgram.Opcion, ChainBufferB.itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
                     gl.bindBuffer(gl.ARRAY_BUFFER, lineNormalBuffer);
                     gl.vertexAttribPointer(currentProgram.vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
