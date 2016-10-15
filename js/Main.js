@@ -118,6 +118,13 @@ function Main()
 
 	   initBuffers();
 
+        for(var i=0;i < LstAtoms.length; i++) //LstAtoms se encuentra en el support.js
+        {      
+          var op=LstAtoms[i]; 
+          var an = document.getElementById(op ); 
+          an.onclick=ByAtoms(molecule,op);
+        }
+
 	   if(molecule!=null)
 	   {
 	   	   data.innerHTML="Loading...";
@@ -196,372 +203,7 @@ function Main()
 		                 AtomosSeleccionados=AtomosSeleccionados.concat(molecule.LstChain[0].LstAminoAcid[script[o]-1].GetAtoms());
 		            }		            
 		        }
-
-
-
-
-		        for(var t=0; t<AtomosSeleccionados.length; t++)
-		            {
-		            	var atom=AtomosSeleccionados[t];
-		            	if (atom.Seleccionado==false) 
-		            	{
-		            		//
-		            		atom.Seleccionado=true;
-                            haySeleccionado=true;
-
-                            if (NBW==0)  //es el primero que voy a agregar al objeto Solid
-                            {
-                                NBW=1;
-                                LstBW[0]=new Array();
-                            }
-                            else
-                            {
-                                //---------------agregarlo a la cola en el wire
-                                if (LstBW[NBW-1].length==NoPaso ) 
-                                {
-                                    NBW+=1;   
-                                    LstBW[NBW-1]=new Array(); 
-                                    wirePositionData[NBW-1]=new Array();
-                                    wirenormalDataN[NBW-1]=new Array();
-                                    wireColorTotal[NBW-1]=new Array();
-                                    wireindexData[NBW-1]=new Array();
-
-                                    ChainIndexW[NBW - 1] = new Array();
-
-                                    sphereWirePositionBuffer[NBW-1]=new Array();
-                                    sphereWireColorBuffer[NBW-1]=new Array();
-                                    sphereWireIndexBuffer[NBW-1]=new Array();
-                                    sphereWireNormalBuffer[NBW-1]=new Array();
-
-                                    ChainBufferW[NBW - 1] = new Array();
-                                }
-
-                            }
-                            LstBW[NBW-1].push(atom);                            
-                            atom.BloqueWire=NBW;                            
-                            atom.PositionBWire=LstBW[NBW-1].length;
-
-                             /////////////////////////////////////////////////// VERTICES    //////////////////////////////////////////
-                            if (atom.Representation=="SB") 
-                            {
-                                for (var z=0; z<nVertices;) //vertices para esfera de 16 latitudes y longitudes
-                                {        
-                                    wirePositionData[NBW-1].push(verArray[z]     + atom.X -Cx);
-                                    wirePositionData[NBW-1].push(verArray[z+1]   + atom.Y -Cy);
-                                    wirePositionData[NBW-1].push(verArray[z+2]   + atom.Z -Cz);
-
-                                    wirenormalDataN[NBW-1].push(normalData[z]    );
-                                    wirenormalDataN[NBW-1].push(normalData[z+1]   );
-                                    wirenormalDataN[NBW-1].push(normalData[z+2]   );
-
-                                    z=z+3;
-                                }
-
-                            }
-                            else if(atom.Representation=="CPK")
-                            {
-                                //alert(89999);
-                                if (atom.NameAtom=='H') 
-                                {
-                                    for (var z=0; z<nVertices;) //vertices para esfera de 16 latitudes y longitudes
-                                    {        
-                                        wirePositionData[NBW-1].push(verArrayH[z]     + atom.X -Cx);
-                                        wirePositionData[NBW-1].push(verArrayH[z+1]   + atom.Y -Cy);
-                                        wirePositionData[NBW-1].push(verArrayH[z+2]   + atom.Z -Cz);
-
-                                        wirenormalDataN[NBW-1].push(normalData[z]    );
-                                        wirenormalDataN[NBW-1].push(normalData[z+1]   );
-                                        wirenormalDataN[NBW-1].push(normalData[z+2]   );
-
-                                        z=z+3;
-                                    }
-                                }
-                                else if (atom.NameAtom=='C') 
-                                {
-                                    for (var z=0; z<nVertices;) //vertices para esfera de 16 latitudes y longitudes
-                                    {        
-                                        wirePositionData[NBW-1].push(verArrayC_PB_TI_CA[z]     + atom.X -Cx);
-                                        wirePositionData[NBW-1].push(verArrayC_PB_TI_CA[z+1]   + atom.Y -Cy);
-                                        wirePositionData[NBW-1].push(verArrayC_PB_TI_CA[z+2]   + atom.Z -Cz);
-
-                                        wirenormalDataN[NBW-1].push(normalData[z]    );
-                                        wirenormalDataN[NBW-1].push(normalData[z+1]   );
-                                        wirenormalDataN[NBW-1].push(normalData[z+2]   );
-
-                                        z=z+3;
-                                    }
-
-
-                                }
-                                else /////////// DEFAULT
-                                {
-                                    for (var z=0; z<nVertices;) //vertices para esfera de 16 latitudes y longitudes
-                                    {        
-                                        wirePositionData[NBW-1].push(verArrayC_PB_TI_CA[z]     + atom.X -Cx);
-                                        wirePositionData[NBW-1].push(verArrayC_PB_TI_CA[z+1]   + atom.Y -Cy);
-                                        wirePositionData[NBW-1].push(verArrayC_PB_TI_CA[z+2]   + atom.Z -Cz);
-
-                                        wirenormalDataN[NBW-1].push(normalData[z]    );
-                                        wirenormalDataN[NBW-1].push(normalData[z+1]   );
-                                        wirenormalDataN[NBW-1].push(normalData[z+2]   );
-
-                                        z=z+3;
-                                    }
-
-                                }
-
-
-                            }
-                            else
-                            {
-
-                            }
-
-                            ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-                            
-                            //alert(99);                         
-                            for(var i=0; i<nColor;)
-                            {
-                                wireColorTotal[NBW-1].push(atom.ColorRGB[0]);
-                                wireColorTotal[NBW-1].push(atom.ColorRGB[1]);
-                                wireColorTotal[NBW-1].push(atom.ColorRGB[2]);
-                                wireColorTotal[NBW-1].push(atom.ColorRGB[3]);
-                                i=i+4;
-
-                                ChainIndexW[NBW - 1].push(atom.idChain);
-                                ChainIndexW[NBW - 1].push(atom.idChain);
-                            }
-                            //alert(nIndices);
-                            for(var i=0; i<nIndices;i++)
-                            {
-                                //tengo que saber en qué posicion se encuentra
-                                wireindexData[NBW-1].push(indicesSphere[i]  +   ( 289 * (LstBW[NBW-1].length-1)) );
-                            }
-                            //alert(44);                            
-                            sphereWirePositionBuffer[NBW-1]=gl.createBuffer();
-                            gl.bindBuffer(gl.ARRAY_BUFFER, sphereWirePositionBuffer[NBW-1]);
-                            gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(wirePositionData[NBW-1]), gl.DYNAMIC_DRAW);
-                            sphereWirePositionBuffer[NBW-1].itemSize = 3;
-                            sphereWirePositionBuffer[NBW-1].numItems = (wirePositionData[NBW-1].length / 3) * 1;
-                            //alert(54);
-                            sphereWireColorBuffer[NBW-1]=gl.createBuffer();
-                            gl.bindBuffer(gl.ARRAY_BUFFER,sphereWireColorBuffer[NBW-1]);
-                            gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(wireColorTotal[NBW-1]), gl.DYNAMIC_DRAW);
-                            sphereWireColorBuffer[NBW-1].itemSize = 4;
-                            sphereWireColorBuffer[NBW-1].numItems = (wireColorTotal[NBW-1].length / 4) * 1;
-                            //alert(64);
-
-                            ChainBufferW[NBW - 1] = gl.createBuffer();
-                            gl.bindBuffer(gl.ARRAY_BUFFER, ChainBufferW[NBW - 1]);
-                            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ChainIndexW[NBW - 1]), gl.DYNAMIC_DRAW);
-                            ChainBufferW[NBW - 1].itemSize = 2;
-                            ChainBufferW[NBW - 1].numItems = (ChainIndexW[NBW - 1].length / 2) * 1;
-
-                            sphereWireIndexBuffer[NBW-1]=gl.createBuffer();
-                            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereWireIndexBuffer[NBW-1]);
-                            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(wireindexData[NBW-1]), gl.DYNAMIC_DRAW);
-                            sphereWireIndexBuffer[NBW-1].itemSize = 1;
-                            sphereWireIndexBuffer[NBW-1].numItems = (wireindexData[NBW-1].length / 1) * 1;
-                            
-                            sphereWireNormalBuffer[NBW-1]=gl.createBuffer();
-                            gl.bindBuffer(gl.ARRAY_BUFFER, sphereWireNormalBuffer[NBW-1]);
-                            gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(wirenormalDataN[NBW-1]), gl.DYNAMIC_DRAW);
-                            sphereWireNormalBuffer[NBW-1].itemSize = 3;
-                            sphereWireNormalBuffer[NBW-1].numItems = (wirenormalDataN[NBW-1].length / 3) * 1; 
-
-                            ///////////////////---------------Quitar el átomo del ObjetoSolid ///////////////////////////////////////////////////////
-
-                            //////////--------------el atomo seleccionado es el último del objeto Solido-----------------//////////
-                            if (atom.BloqueSolid==NBS  &&  atom.PositionBSolid==LstBS[NBS-1].length ) //mandar la alerta para checar si esto está bien
-                            { //las posiciones van desde 0, 
-                                //quitar el atom solid
-                                //alert("el atomo seleccionado es el ultimo del objeto solido");
-                                vertexPositionData[NBS-1].splice( (atom.PositionBSolid-1)*nVertices,nVertices);
-                                normalDataN[NBS-1].splice( (atom.PositionBSolid-1)*nVertices,nVertices);
-                                ColorTotal[NBS-1].splice( (atom.PositionBSolid-1)*nColor,nColor);
-                                indexData[NBS-1].splice((atom.PositionBSolid-1)*nIndices,nIndices);
-                                ChainIndex[NBS - 1].splice((atom.PositionBSolid - 1) * nChain, nChain);
-
-
-                                LstBS[NBS-1].pop() //se quita el atom del solid
-                                if (LstBS[NBS-1].length==0) //quiere decir que era el único átomo que había en todo el bloque solid
-                                {
-                                    NBS-=1;
-                                }
-                                else
-                                {
-                                    //solo se imprime si no se eliminó un bloque, ya que si se eliminó un bloque no se va a imprimir en la tarjeta gráfica
-                                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[NBS-1]);
-                                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[NBS-1]), gl.DYNAMIC_DRAW);
-                                    sphereVertexPositionBuffer[NBS-1].itemSize = 3;
-                                    sphereVertexPositionBuffer[NBS-1].numItems = (vertexPositionData[NBS-1].length / 3) * 1;
-
-                                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBuffer[NBS-1]);
-                                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ColorTotal[NBS-1]), gl.DYNAMIC_DRAW);
-                                    sphereVertexColorBuffer[NBS-1].numItems = ColorTotal[NBS-1].length/4;
-                                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-                                    gl.bindBuffer(gl.ARRAY_BUFFER, ChainBuffer[NBS - 1]);
-                                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ChainIndex[NBS - 1]), gl.DYNAMIC_DRAW);
-                                    ChainBuffer[NBS - 1].itemSize = 2;
-                                    ChainBuffer[NBS - 1].numItems = (ChainIndex[NBS - 1].length / 2) * 1;
-
-                                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereVertexIndexBuffer[NBS-1]);
-                                    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexData[NBS-1]), gl.DYNAMIC_DRAW);
-                                    sphereVertexIndexBuffer[NBS-1].itemSize = 1;
-                                    sphereVertexIndexBuffer[NBS-1].numItems = indexData[NBS-1].length;
-                                }
-
-                            }
-                            //////////--------------el atomo seleccionado no es el último el los bloques Solid-----------------//////////
-                            else
-                            {   
-                                //alert("el atomo seleccionado no es el ultimo del objeto solido");                                                          
-                                //voy a eliminar este atom y además voy a agregar el que está en la cola del solid a esta posición
-                                for(var i=0; i<nVertices;i++)
-                                {
-                                    vertexPositionData[atom.BloqueSolid-1].splice( ((atom.PositionBSolid-1)*nVertices)+i, 1, vertexPositionData[NBS-1][vertexPositionData[NBS-1].length - nVertices + i ] );
-                                    normalDataN[atom.BloqueSolid-1].splice( ((atom.PositionBSolid-1)*nVertices)+i,        1, normalDataN[NBS-1][normalDataN[NBS-1].length - nVertices + i ] );     
-                                }                                
-                                for(var i=0; i<nColor;i++)
-                                {
-                                    ColorTotal[atom.BloqueSolid-1].splice( ((atom.PositionBSolid-1)*nColor)+i,            1, ColorTotal[NBS-1][ColorTotal[NBS-1].length - nColor + i ] );  
-                                }
-
-                                for (var i = 0; i < nChain; i++) 
-                                {
-                                    ChainIndex[atom.BloqueSolid - 1].splice(((atom.PositionBSolid - 1) * nChain) + i, 1, ChainIndex[NBS - 1][ChainIndex[NBS - 1].length - nChain + i]);
-                                } 
-
-                                                              
-                                //los índices sólo quito los indices últimos del último bloque
-                                indexData[NBS-1].splice( indexData[NBS-1].length - nIndices ,nIndices);
-
-                                //ahora eliminar el que tenía en la cola
-                                vertexPositionData[NBS-1].splice(vertexPositionData[NBS-1].length - nVertices,nVertices);
-                                normalDataN[NBS-1].splice(normalDataN[NBS-1].length - nVertices,nVertices);
-                                ColorTotal[NBS-1].splice(ColorTotal[NBS-1].length - nColor,nColor);
-                                ChainIndex[NBS - 1].splice(ChainIndex[NBS - 1].length - nChain, nChain);
-
-                                LstBS[NBS-1][ LstBS[NBS-1].length-1 ].BloqueSolid=atom.BloqueSolid;
-                                LstBS[NBS-1][ LstBS[NBS-1].length-1 ].PositionBSolid=atom.PositionBSolid;
-                                LstBS[atom.BloqueSolid-1].splice( atom.PositionBSolid-1, 1, LstBS[NBS-1][LstBS[NBS-1].length-1] ) //se quita el atom del solid y se agrega el de la cola
-                                LstBS[NBS-1].pop();
-                                //alert(98888);
-                                
-                                if (atom.BloqueSolid==NBS) 
-                                {
-                                    //alert("wss");
-                                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[NBS-1]);
-                                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[NBS-1]), gl.DYNAMIC_DRAW);
-                                    sphereVertexPositionBuffer[NBS-1].itemSize = 3;
-                                    sphereVertexPositionBuffer[NBS-1].numItems = (vertexPositionData[NBS-1].length / 3) * 1;
-
-                                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBuffer[NBS-1]);
-                                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ColorTotal[NBS-1]), gl.DYNAMIC_DRAW);
-                                    sphereVertexColorBuffer[NBS-1].numItems = ColorTotal[NBS-1].length/4;
-                                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-                                    gl.bindBuffer(gl.ARRAY_BUFFER, ChainBuffer[NBS - 1]);
-                                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ChainIndex[NBS - 1]), gl.DYNAMIC_DRAW);
-                                    ChainBuffer[NBS - 1].itemSize = 2;
-                                    ChainBuffer[NBS - 1].numItems = (ChainIndex[NBS - 1].length / 2) * 1;
-
-                                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereVertexIndexBuffer[NBS-1]);
-                                    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexData[NBS-1]), gl.DYNAMIC_DRAW);
-                                    sphereVertexIndexBuffer[NBS-1].itemSize = 1;
-                                    sphereVertexIndexBuffer[NBS-1].numItems = indexData[NBS-1].length;
-
-                                }
-                                else
-                                {
-                                    //alert("yyyyy");
-                                    //quiere decir que son dos bloques los que voy a procesar
-                                    if (LstBS[NBS-1].length==0) 
-                                    {
-                                        //alert(88);
-                                    }
-                                    else
-                                    {
-                                        //alert(99);
-                                        gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[NBS-1]);
-                                        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[NBS-1]), gl.DYNAMIC_DRAW);
-                                        sphereVertexPositionBuffer[NBS-1].itemSize = 3;
-                                        sphereVertexPositionBuffer[NBS-1].numItems = (vertexPositionData[NBS-1].length / 3) * 1;
-
-                                        gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBuffer[NBS-1]);
-                                        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ColorTotal[NBS-1]), gl.DYNAMIC_DRAW);
-                                        sphereVertexColorBuffer[NBS-1].itemSize = 4;
-                                        sphereVertexColorBuffer[NBS-1].numItems = ColorTotal[NBS-1].length/4;
-                                        gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-                                        gl.bindBuffer(gl.ARRAY_BUFFER, ChainBuffer[NBS - 1]);
-	                                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ChainIndex[NBS - 1]), gl.DYNAMIC_DRAW);
-	                                    ChainBuffer[NBS - 1].itemSize = 2;
-	                                    ChainBuffer[NBS - 1].numItems = (ChainIndex[NBS - 1].length / 2) * 1;
-
-                                        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereVertexIndexBuffer[NBS-1]);
-                                        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexData[NBS-1]), gl.DYNAMIC_DRAW);
-                                        sphereVertexIndexBuffer[NBS-1].itemSize = 1;
-                                        sphereVertexIndexBuffer[NBS-1].numItems = indexData[NBS-1].length;
-
-                                        gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexNormalBuffer[NBS-1]);
-                                        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normalDataN[NBS-1]), gl.DYNAMIC_DRAW);
-                                        sphereVertexNormalBuffer[NBS-1].itemSize = 3;
-                                        sphereVertexNormalBuffer[NBS-1].numItems = normalDataN[NBS-1].length/3;
-                                        //alert(100);
-
-                                    }
-                                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[atom.BloqueSolid-1]);
-                                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[atom.BloqueSolid-1]), gl.DYNAMIC_DRAW);
-                                    sphereVertexPositionBuffer[atom.BloqueSolid-1].itemSize = 3;
-                                    sphereVertexPositionBuffer[atom.BloqueSolid-1].numItems = (vertexPositionData[atom.BloqueSolid-1].length / 3) * 1;
-
-                                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBuffer[atom.BloqueSolid-1]);
-                                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ColorTotal[atom.BloqueSolid-1]), gl.DYNAMIC_DRAW);
-                                    sphereVertexColorBuffer[atom.BloqueSolid-1].itemSize = 4;
-                                    sphereVertexColorBuffer[atom.BloqueSolid-1].numItems = ColorTotal[atom.BloqueSolid-1].length/4;
-                                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-                                    gl.bindBuffer(gl.ARRAY_BUFFER, ChainBuffer[atom.BloqueSolid - 1]);
-                                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ChainIndex[atom.BloqueSolid - 1]), gl.DYNAMIC_DRAW);
-                                    ChainBuffer[atom.BloqueSolid - 1].itemSize = 2;
-                                    ChainBuffer[atom.BloqueSolid - 1].numItems = (ChainIndex[atom.BloqueSolid - 1].length / 2) * 1;
-
-                                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereVertexIndexBuffer[atom.BloqueSolid-1]);
-                                    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexData[atom.BloqueSolid-1]), gl.DYNAMIC_DRAW);
-                                    sphereVertexIndexBuffer[atom.BloqueSolid-1].itemSize = 1;
-                                    sphereVertexIndexBuffer[atom.BloqueSolid-1].numItems = indexData[atom.BloqueSolid-1].length;
-
-                                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexNormalBuffer[atom.BloqueSolid-1]);
-                                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normalDataN[atom.BloqueSolid-1]), gl.DYNAMIC_DRAW);
-                                    sphereVertexNormalBuffer[atom.BloqueSolid-1].itemSize = 3;
-                                    sphereVertexNormalBuffer[atom.BloqueSolid-1].numItems = normalDataN[atom.BloqueSolid-1].length/3;
-                                    //alert(101);
-                                }
-
-                                if (LstBS[NBS-1].length==0) 
-                                {
-                                    NBS-=1;
-                                }   
-
-                            }                             
-
-
-		            	}
-		            	else
-		            	{
-		            		//No hacer nada xq ya está seleccionado
-
-		            	}
-
-		            }
-
-
-
-
-
+                ProcesarSeleccion();
 			}	
 
 			//alert(AtomosSeleccionados.length);		
@@ -805,6 +447,20 @@ function Main()
 	    buttonOp.onclick=R_B();
 
 		
+
+        for(var i=0;i < LstAtoms.length; i++) //LstAtoms se encuentra en el support.js
+        {      
+          var op=LstAtoms[i]; 
+          var an = document.getElementById(op ); 
+          an.onclick=ByAtoms(molecule,op);
+        }
+
+        for(var i=0;i < LstAminoacid.length; i++)
+        {      
+          var op=LstAminoacid[i]; 
+          var an = document.getElementById(op); 
+          an.onclick=ByAmino(molecule,op);
+        }
   		
         if(typeof(URLS) != "undefined")
         { 

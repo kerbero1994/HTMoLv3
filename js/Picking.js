@@ -132,18 +132,21 @@ function handleMouseDown(event)
                                 LstBW[NBW - 1][LstBW[NBW - 1].length - 1].PositionBWire = atom.PositionBWire;
                                 LstBW[atom.BloqueWire - 1].splice(atom.PositionBWire - 1, 1, LstBW[NBW - 1][LstBW[NBW - 1].length - 1])
 
+                                var mult= (atom.PositionBWire - 1) * nVertices;
                                 for (var i = 0; i < nVertices; i++) {
-                                    wirePositionData[atom.BloqueWire - 1].splice(((atom.PositionBWire - 1) * nVertices) + i, 1, wirePositionData[NBW - 1][wirePositionData[NBW - 1].length - nVertices + i]);
-                                    wirenormalDataN[atom.BloqueWire - 1].splice(((atom.PositionBWire - 1) * nVertices) + i, 1, wirenormalDataN[NBW - 1][wirenormalDataN[NBW - 1].length - nVertices + i]);
+                                    wirePositionData[atom.BloqueWire - 1][mult + i] = wirePositionData[NBW - 1][wirePositionData[NBW - 1].length - nVertices + i];
+                                    wirenormalDataN[atom.BloqueWire - 1][mult + i]  = wirenormalDataN[NBW - 1][wirenormalDataN[NBW - 1].length - nVertices + i];
                                 }
                                 //alert(4);
+                                var mult2= (atom.PositionBWire - 1) * nColor;
                                 for (var i = 0; i < nColor; i++) {
-                                    wireColorTotal[atom.BloqueWire - 1].splice(((atom.PositionBWire - 1) * nColor) + i, 1, wireColorTotal[NBW - 1][wireColorTotal[NBW - 1].length - nColor + i]);
+                                    wireColorTotal[atom.BloqueWire - 1][mult2 + i] =  wireColorTotal[NBW - 1][wireColorTotal[NBW - 1].length - nColor + i];
                                 }   
 
+                                var mult3= (atom.PositionBWire - 1) * nChain;
                                 for (var i = 0; i < nChain; i++) 
                                 {
-                                    ChainIndexW[atom.BloqueWire - 1].splice(((atom.PositionBWire - 1) * nChain) + i, 1, ChainIndexW[NBW - 1][ChainIndexW[NBW - 1].length - nChain + i]);
+                                    ChainIndexW[atom.BloqueWire - 1][mult3 + i] = ChainIndexW[NBW - 1][ChainIndexW[NBW - 1].length - nChain + i];
                                 }                              
 
                                 //alert(5);
@@ -551,17 +554,21 @@ function handleMouseDown(event)
                             else {
                                 //alert("el atomo seleccionado no es el ultimo del objeto solido");                                                          
                                 //voy a eliminar este atom y además voy a agregar el que está en la cola del solid a esta posición
+                                var mult = (atom.PositionBSolid - 1) * nVertices;
                                 for (var i = 0; i < nVertices; i++) {
-                                    vertexPositionData[atom.BloqueSolid - 1].splice(((atom.PositionBSolid - 1) * nVertices) + i, 1, vertexPositionData[NBS - 1][vertexPositionData[NBS - 1].length - nVertices + i]);
-                                    normalDataN[atom.BloqueSolid - 1].splice(((atom.PositionBSolid - 1) * nVertices) + i, 1, normalDataN[NBS - 1][normalDataN[NBS - 1].length - nVertices + i]);
-                                }
-                                for (var i = 0; i < nColor; i++) {
-                                    ColorTotal[atom.BloqueSolid - 1].splice(((atom.PositionBSolid - 1) * nColor) + i, 1, ColorTotal[NBS - 1][ColorTotal[NBS - 1].length - nColor + i]);
+                                    vertexPositionData[atom.BloqueSolid - 1][mult + i] = vertexPositionData[NBS - 1][vertexPositionData[NBS - 1].length - nVertices + i];
+                                    normalDataN[atom.BloqueSolid - 1][mult + i] = normalDataN[NBS - 1][normalDataN[NBS - 1].length - nVertices + i];
                                 }
 
+                                var mult1 = (atom.PositionBSolid - 1) * nColor;
+                                for (var i = 0; i < nColor; i++) {
+                                    ColorTotal[atom.BloqueSolid - 1][mult1 + i] = ColorTotal[NBS - 1][ColorTotal[NBS - 1].length - nColor + i];
+                                }
+
+                                var mult2 = (atom.PositionBSolid - 1) * nChain;
                                 for (var i = 0; i < nChain; i++) 
                                 {
-                                    ChainIndex[atom.BloqueSolid - 1].splice(((atom.PositionBSolid - 1) * nChain) + i, 1, ChainIndex[NBS - 1][ChainIndex[NBS - 1].length - nChain + i]);
+                                    ChainIndex[atom.BloqueSolid - 1][mult2 + i] = ChainIndex[NBS - 1][ChainIndex[NBS - 1].length - nChain + i];
                                 }  
 
 
@@ -816,8 +823,8 @@ function handleMouseDown(event)
                                         ColorTotal[NBS - 1].push(atomTemp.ColorRGB[3]);
                                         z = z + 4;
 
-                                        ChainIndex[NBS - 1].push(atom.idChain);
-                                        ChainIndex[NBS - 1].push(atom.idChain);
+                                        ChainIndex[NBS - 1].push(atomTemp.idChain);
+                                        ChainIndex[NBS - 1].push(atomTemp.idChain);
                                     }
                                     //alert(indexData[NBS-1]);                                    
                                     for (var z = 0; z < nIndices; z++) {
