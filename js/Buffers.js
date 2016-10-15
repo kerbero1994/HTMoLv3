@@ -281,7 +281,7 @@ function initBuffers()
                             B=B+1;
                         }
                     }
-                    molecule.LstAtoms[apuntador].ColorRGBDiffuse=GetColorDif(R*Scala,G*Scala,B*Scala);
+                    molecule.LstAtoms[apuntador].ColorRGBDiffuse= [R*Scala,G*Scala,B*Scala];
 
                     molecule.LstAtoms[apuntador].BloqueSolid=i+1;         
                     molecule.LstAtoms[apuntador].PositionBSolid=j+1;     //Preguntarle al doc si siempre aprecen en órden continuo
@@ -458,7 +458,7 @@ function initBuffers()
                         }
                     }
 
-                    molecule.LstAtoms[apuntador].ColorRGBDiffuse=GetColorDif(R*Scala,G*Scala,B*Scala);
+                    molecule.LstAtoms[apuntador].ColorRGBDiffuse=[R*Scala,G*Scala,B*Scala];
                     molecule.LstAtoms[apuntador].BloqueSolid=i+1;         
                     molecule.LstAtoms[apuntador].PositionBSolid=j+1;     //Preguntarle al doc si siempre aprecen en órden continuo
                     
