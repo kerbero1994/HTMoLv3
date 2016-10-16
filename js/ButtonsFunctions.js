@@ -404,7 +404,7 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
             if (ato.NameAtom == 'H') {
                 //alert("H");
                 //ingresar los nuevos vértices
-                for (var z = 0; z < 867;) //vertices para esfera de 16 latitudes y longitudes
+                for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
                 {
                     wirePositionData[ato.BloqueWire - 1][vertexPosition + z] = verArrayH[z] + ato.X - Cx; //estoy quitando y al mismo tiempo agregando, por lo que se queda
                     wirePositionData[ato.BloqueWire - 1][vertexPosition + z + 1] = verArrayH[z + 1] + ato.Y - Cy; //la misma longitud en cada operación
@@ -421,7 +421,7 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
             } else if (ato.NameAtom == 'C') {
                 //alert("C");
                 //ingresar los nuevos vértices
-                for (var z = 0; z < 867;) {
+                for (var z = 0; z < nVertices;) {
                     wirePositionData[ato.BloqueWire - 1][vertexPosition + z] = verArrayC_PB_TI_CA[z] + ato.X - Cx;
                     wirePositionData[ato.BloqueWire - 1][vertexPosition + z + 1] = verArrayC_PB_TI_CA[z + 1] + ato.Y - Cy;
                     wirePositionData[ato.BloqueWire - 1][vertexPosition + z + 2] = verArrayC_PB_TI_CA[z + 2] + ato.Z - Cz;
@@ -438,7 +438,7 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
             } else if (ato.NameAtom == 'PB') {
                 //alert("PB");
                 //ingresar los nuevos vértices
-                for (var z = 0; z < 867;) {
+                for (var z = 0; z < nVertices;) {
                     wirePositionData[ato.BloqueWire - 1][vertexPosition + z] = verArrayC_PB_TI_CA[z] + ato.X - Cx;
                     wirePositionData[ato.BloqueWire - 1][vertexPosition + z + 1] = verArrayC_PB_TI_CA[z + 1] + ato.Y - Cy;
                     wirePositionData[ato.BloqueWire - 1][vertexPosition + z + 2] = verArrayC_PB_TI_CA[z + 2] + ato.Z - Cz;
@@ -454,7 +454,7 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
             } else if (ato.NameAtom == 'TI') {
                 //alert("TI");
                 //ingresar los nuevos vértices
-                for (var z = 0; z < 867;) {
+                for (var z = 0; z < nVertices;) {
                     wirePositionData[ato.BloqueWire - 1][vertexPosition + z] = verArrayC_PB_TI_CA[z] + ato.X - Cx;
                     wirePositionData[ato.BloqueWire - 1][vertexPosition + z + 1] = verArrayC_PB_TI_CA[z + 1] + ato.Y - Cy;
                     wirePositionData[ato.BloqueWire - 1][vertexPosition + z + 2] = verArrayC_PB_TI_CA[z + 2] + ato.Z - Cz;
@@ -470,7 +470,7 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
             } else if (ato.NameAtom == 'CA') {
                 //alert("CA");
                 //ingresar los nuevos vértices
-                for (var z = 0; z < 867;) {
+                for (var z = 0; z < nVertices;) {
                     wirePositionData[ato.BloqueWire - 1][vertexPosition + z] = verArrayC_PB_TI_CA[z] + ato.X - Cx;
                     wirePositionData[ato.BloqueWire - 1][vertexPosition + z + 1] = verArrayC_PB_TI_CA[z + 1] + ato.Y - Cy;
                     wirePositionData[ato.BloqueWire - 1][vertexPosition + z + 2] = verArrayC_PB_TI_CA[z + 2] + ato.Z - Cz;
@@ -486,7 +486,7 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
             } else if (ato.NameAtom == 'N') {
                 //alert("N");
                 //ingresar los nuevos vértices
-                for (var z = 0; z < 867;) //vertices para esfera de 16 latitudes y longitudes
+                for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
                 {
                     wirePositionData[ato.BloqueWire - 1][vertexPosition + z] = verArrayN[z] + ato.X - Cx;
                     wirePositionData[ato.BloqueWire - 1][vertexPosition + z + 1] = verArrayN[z + 1] + ato.Y - Cy;
@@ -503,7 +503,7 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
             } else if (ato.NameAtom == 'O') {
                 //alert("O");
                 //ingresar los nuevos vértices
-                for (var z = 0; z < 867;) //vertices para esfera de 16 latitudes y longitudes
+                for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
                 {
                     wirePositionData[ato.BloqueWire - 1][vertexPosition + z] = verArrayO[z] + ato.X - Cx;
                     wirePositionData[ato.BloqueWire - 1][vertexPosition + z + 1] = verArrayO[z + 1] + ato.Y - Cy;
@@ -522,7 +522,7 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
             } else if (ato.NameAtom == 'S') {
                 //alert("S");
                 //ingresar los nuevos vértices
-                for (var z = 0; z < 867;) //vertices para esfera de 16 latitudes y longitudes
+                for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
                 {
                     wirePositionData[ato.BloqueWire - 1][vertexPosition + z] = verArrayS[z] + ato.X - Cx;
                     wirePositionData[ato.BloqueWire - 1][vertexPosition + z + 1] = verArrayS[z + 1] + ato.Y - Cy;
@@ -539,7 +539,7 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
             } else if (ato.NameAtom == 'P') {
                 //alert("P");
                 //ingresar los nuevos vértices
-                for (var z = 0; z < 867;) //vertices para esfera de 16 latitudes y longitudes
+                for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
                 {
                     wirePositionData[ato.BloqueWire - 1][vertexPosition + z] = verArrayP[z] + ato.X - Cx;
                     wirePositionData[ato.BloqueWire - 1][vertexPosition + z + 1] = verArrayP[z + 1] + ato.Y - Cy;
@@ -557,7 +557,7 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
             {
                 //alert("entra aqui");
                 //ingresar los nuevos vértices
-                for (var z = 0; z < 867;) //vertices para esfera de 16 latitudes y longitudes
+                for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
                 {
                     wirePositionData[ato.BloqueWire - 1][vertexPosition + z] = verArrayDefault[z] + ato.X - Cx;
                     wirePositionData[ato.BloqueWire - 1][vertexPosition + z + 1] = verArrayDefault[z + 1] + ato.Y - Cy;
@@ -607,7 +607,7 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
             var colorPosition = (ato.PositionBWire - 1) * nColor;
             var indexPosition = (ato.PositionBWire - 1) * nIndices;
 
-            for (var z = 0; z < 867;) //vertices para esfera de 16 latitudes y longitudes
+            for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
             {
                 wirePositionData[ato.BloqueWire - 1][vertexPosition + z] = verArray[z] + ato.X - Cx;
                 wirePositionData[ato.BloqueWire - 1][vertexPosition + z + 1] = verArray[z + 1] + ato.Y - Cy;
