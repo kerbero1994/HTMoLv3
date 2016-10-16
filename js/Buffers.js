@@ -613,6 +613,7 @@ function initBuffers()
     NBS=NoBloques;
     ///////////////////////////////////////////////////////// LINEAS DE ENLACES //////////////////////////////////////////////
     verticesLineas=[];
+    ChainIndexB=[];
     lineVertexPositionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, lineVertexPositionBuffer);
     var linesNormals=[];

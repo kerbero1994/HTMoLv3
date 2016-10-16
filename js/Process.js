@@ -150,7 +150,6 @@ function createBonds(main)
 function Process()
 {
     this.Model= new Molecule();
-    var cont=0;
 	this.ReadFile= function(URL)
 	{
 		   var text = $.ajax({
@@ -167,7 +166,7 @@ function Process()
 	   
 	this.Parse= function(text)
 	{
-
+		var cont=0;
 	   	this.Model=new Molecule();
 	    var cmpAmino='',cmpChain='';
 	    var chain=new Chain();
@@ -180,6 +179,8 @@ function Process()
 	    var contSkele=0;
 	    var id=0;
 	    var ChainCont=1;
+	    contBonds=0;
+	    contBS=0;
 	      
 	    for(var i=0; i<lines.length; ++i)
 	    {
@@ -274,7 +275,6 @@ function Process()
 			   	id++;	
 			   	atom.id=id;
 			   	atom.idChain=ChainCont;
-			   		   	
 		    }
 		    
 	    }
