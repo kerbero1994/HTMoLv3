@@ -123,6 +123,20 @@ function Main()
     }
     this.CleanScene=function()
     {
+        //tengo que limpiar los arreglos de los bloques wire
+        for(var i=0; i<NBW; i++)
+        {
+            wirePositionData[i]=[];
+            wireColorTotal[i]=[];
+            ChainIndexW[i]=[];
+            wireindexData[i]=[];
+            wirenormalDataN[i]=[];
+            LstBW[i]=[];
+
+        }
+        hayseleccionado=false;
+        NBW=0;
+
         ArrayIndx=[0];
         var u_Array = gl.getUniformLocation(program, 'uIntArray');
         gl.uniform1fv(u_Array, ArrayIndx);
