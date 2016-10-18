@@ -126,6 +126,13 @@ function Main()
             an.onclick=SetView(molecule,op);
         }
 
+        for(var i=0; i< LstColors.length; i++)
+        {
+            var op=LstColors[i]; 
+            var an = document.getElementById(op); 
+            an.onclick=ByColor(molecule,op);
+        }
+
     }
     this.CleanScene=function()
     {

@@ -87,6 +87,22 @@ function ByAtoms(mol, element) {
     }
 }
 
+function ByColor(mol, color) {
+    return function(event) {
+        AtomosSeleccionados = [];
+        for (var i = 0; i < molecule.LstAtoms.length; i++) {
+            //alert(molecule.LstAtoms[i].Element);
+            if (color == molecule.LstAtoms[i].ColorName) {
+                if (molecule.LstAtoms[i].State == 'Active') {
+                    AtomosSeleccionados.push(molecule.LstAtoms[i]);
+                }
+
+            }
+        }
+        ProcesarSeleccion();
+    }
+}
+
 function ProcesarSeleccion() {
     console.time("procesarSeleccion");
     for (var t = 0; t < AtomosSeleccionados.length; t++) {
