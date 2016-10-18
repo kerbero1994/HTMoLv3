@@ -119,6 +119,12 @@ function Main()
           an.onclick=ByAmino(molecule,op);
         }
 
+        for(var i in LstViews)
+        {
+            var op = LstViews[i];
+            var an = document.getElementById(op.name);
+            an.onclick=SetView(molecule,op);
+        }
 
     }
     this.CleanScene=function()

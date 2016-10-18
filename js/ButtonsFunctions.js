@@ -17,6 +17,40 @@ function R_B() {
     }
 }
 
+function SetView(mol, name){
+    return function(event) {
+         var newRotationMatrix = mat4.create();
+        mat4.identity(newRotationMatrix);
+        if (name.name=='F') 
+        {
+            mat4.rotate(newRotationMatrix, degToRad(0), [0, 1, 0]); //vista frontal
+        }
+        else if(name.name=='L')
+        {
+            mat4.rotate(newRotationMatrix, degToRad(90), [0, 1, 0]); //vista izquierda
+        }
+        else if(name.name=='R')
+        {
+            mat4.rotate(newRotationMatrix, degToRad(270), [0, 1, 0]); //vista derecha
+        }
+        else if(name.name=='U')
+        {
+            mat4.rotate(newRotationMatrix, degToRad(90), [1, 0, 0]); //vista de arriba
+        }
+        else if(name.name=='D')
+        {
+            mat4.rotate(newRotationMatrix, degToRad(270), [1, 0, 0]); //vista de abajo
+        }
+        else //back
+        {
+            mat4.rotate(newRotationMatrix, degToRad(180), [0, 1, 0]); //vista de atras
+        }
+
+        mat4.identity(RotationMatrix);
+         mat4.multiply(newRotationMatrix, RotationMatrix, RotationMatrix);
+    }
+}
+
 function ByAmino(mol, name) {
     return function(event) {
         AtomosSeleccionados = [];
