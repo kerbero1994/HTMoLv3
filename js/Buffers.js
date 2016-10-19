@@ -1,33 +1,11 @@
 var AtomArray=[];
 
-function initBuffers() 
+
+function initBuffersSpheres(repre) 
 {
                 
     //AtomosSeleccionados=molecule.LstAtoms;
-
-    Cx=molecule.CenterX;
-    Cy=molecule.CenterY;
-    Cz=molecule.CenterZ;
-
-    z=-Cz;
     
-    if (Cx>Cy) 
-    {
-        CameraPosition=Cx;
-    }
-    else
-    {
-        CameraPosition=Cy;
-    }
-    if (CameraPosition>Cz) 
-    {
-        CameraPosition=Cz;
-    }
-    
-    ZoomMotion=Math.ceil(CameraPosition/10);
-    CameraPosition=CameraPosition*4;
-
-    NoPaso = 20;
     var NoAtomos = molecule.LstAtoms.length;
     NoBloques = Math.ceil(NoAtomos/NoPaso);
     var Restantes = NoAtomos - ((NoBloques-1) * NoPaso);
@@ -611,6 +589,12 @@ function initBuffers()
     }
 
     NBS=NoBloques;
+        
+
+}
+
+function initBuffersBonds() 
+{
     ///////////////////////////////////////////////////////// LINEAS DE ENLACES //////////////////////////////////////////////
     verticesLineas=[];
     ChainIndexB=[];
@@ -680,6 +664,7 @@ function initBuffers()
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ChainIndexB), gl.DYNAMIC_DRAW);
     ChainBufferB.itemSize=2;
     ChainBufferB.numItems=ChainIndexB.length/2;   
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ 
+
 }
 

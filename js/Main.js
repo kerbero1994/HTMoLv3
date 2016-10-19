@@ -48,33 +48,19 @@ function Main()
     //----------------------------------------------------------------------------------------------------------------
     var main=this;
     this.ObjP= new Process();
-    //--------------------------Este bloque se va a crear en una función ya que aquí se lee el archivo pdb con la ruta dada-------------------
-    molecule=this.ObjP.ReadFile("1crn.pdb");
-    createBonds(this);  
 
-    //--------------------------------------------------------------------------------------------------------------------------------------------------
+    //--------------------------
+    molecule=this.ObjP.ReadFile(pdbInicial);
+    createBonds(this);  
+    initCamera();
+
+    //---------------------------
 
     AtomosSeleccionados=molecule.LstAtoms;
-
-    //this.Obj3D= new THREED(ObjRepresentation,main,main.ObjP);
 
     var Container=null;
     var buffer = new ArrayBuffer();
 
-
-
-    this.Model= function(url)
-    {
-        return function(event){
-        try{
-            CleanScene();
-        main.MakeModel(url);   
-        }catch(e)
-        {
-            data.innerHTML='Error: Invalid URL or Connection not available';
-        }
-       }
-    }
 
     this.DeleteButtons = function()
     {
@@ -165,8 +151,16 @@ function Main()
         molecule=main.ObjP.ReadFile(url);   
         
         createBonds(main);
-
-        initBuffers();
+        initCamera();
+        if (RepresentacionInicial=='SpheresBonds') 
+        {
+            initBuffersSpheres();
+            initBuffersBonds();
+        }
+        else if(RepresentacionInicial=='Bonds')
+        {
+            initBuffersBonds();
+        }
 
         main.Buttons();
 

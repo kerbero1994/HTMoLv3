@@ -17,6 +17,8 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
     <script src="js/Support.js"></script>
     <script src="js/Main.js"> </script>
     <script src='js/Menu.js'></script>
+    <script src='js/config.js'></script>
+    <script src='js/camera.js'></script>
 
     <script src='js/Shaders.js'></script> 
     <script src='js/plantilla_esfera.js'></script>
@@ -111,7 +113,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                 {  
                     vPaint=true;
 
-                    for(int i=0;i<8;i++)
+                    for(int i=0;i<100;i++)
                     {
                         if (uIntArray[i] == 0.0  ) 
                         {
@@ -142,8 +144,6 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
 
             }       
 
-        //gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-        //vColor = aVertexColor;
     }
 </script>
 
@@ -152,16 +152,6 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
 
     <script type="text/javascript">
 
-        ////////////////////////////7
-/*
-    var testArray=[];
-    testArray.push([1,2,3,4]);
-    testArray.push([5,6,7,8]);
-    alert(testArray[1]);
-    testArray[1].splice(0,1);
-    alert(testArray[1]);
-    alert(testArray[0]);*/
-/////////////////////////////
 
     var gl;
     var NoBloques=0;
@@ -174,13 +164,10 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
 
     var contadores=0;
 
-    var NoPaso;
-
     var SeleccionadoNumber=0;
     var habiaSeleccionado=false;
     var haySeleccionado=false;
 
-    var Representacion='SpheresBonds';
     var AtomosSeleccionados=[];
 
     var verArray=[];
@@ -216,6 +203,21 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
     var verArrayP=[];
     var verArrayDefault=[];
     /////////////////////////////////////////
+
+    /////////////////////////////////////////// PARA DIGITOS ///////////////////////////////////////////
+    var diPosition = [];
+    var diColor = [];
+    var diNormal = [];
+    var diIndex = [];
+    var chaIndex = [];
+
+    var diPosBuffer = [];
+    var diColorBuffer = [];
+    var diNorBuffer = [];
+    var diIndexBuffer = [];
+    var chaIndexBuffer = [];
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
     function initGL(canvas) {
         try { 
@@ -356,17 +358,6 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
     var ChainIndex=[];
 
     var ArrayIndx=[]; //variable para las cadenas que se apagan y prenden
-
-        
-    //var vec = vec3.create4();
-    // vec[0]=4;
-    // vec[1]=3;
-    // vec[2]=2;
-    // vec[3]=1;
-
-    // var vecResul = vec3.create4();
-    // var vecResul2 = vec3.create4();
-      //console.log("vec:["+vec[0]+"]["+vec[1]+"]["+vec[2]+"]["+vec[3]+"]");
 
 
     function drawScene(diffuse) 
@@ -664,26 +655,6 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                 bndfinal=false;
                 numframe=0;
                 pos=0;
-                /*
-                trjbnd=false;
-                numframe=0;
-                requireddata=false;
-                totalframes1=totalframes;
-                totalframes=0;
-                pos=0;
-                sizeglob=0;
-                readend=4999999;
-                readstart=0;
-                bndbuffer=0;
-                sizearrayp=0;
-                coordsX= new Float32Array();
-                coordsX1=new Float32Array();
-                coordsY= new Float32Array();
-                coordsY1=new Float32Array();    
-                coordsZ= new Float32Array();
-                coordsZ1=new Float32Array();
-                bndreview = true;
-                */
                 console.log("segunda parte sale");
             }
        
@@ -818,11 +789,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
 
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
             }
-
-
-
 
         }
 
@@ -909,7 +876,20 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
         initGL(canvas);
         initShaders();
         initPlantillaEsfera();
-        initBuffers();
+        if (RepresentacionInicial=='SpheresBonds') 
+        {
+            initBuffersSpheres('SB');
+            initBuffersBonds();
+        }
+        else if(RepresentacionInicial=='Bonds')
+        {
+            initBuffersBonds();
+        }
+        else if(RepresentacionInicial=='CPK')
+        {
+            initBuffersSpheres('CPK');   
+        }
+        
 
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
@@ -1059,7 +1039,6 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
 <script type="text/javascript">
     var main= new Main();
     var container = document.getElementById("Contenedor");
-    //main.SetBackgroundColor(0xff0000);
     main.MakeMenu(container);
 </script>
    
