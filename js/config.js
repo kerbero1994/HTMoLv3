@@ -8,4 +8,4 @@ var RepresentacionInicial='SpheresBonds';
 
 var NoPaso = 100; //es el número de átomos por bloque para realizar la llamada a la tarjeta gráfica, no puede ser mayor de 200 debido a la capacidad de los arreglos flotantes de js
 
-var pdbInicial='1al0.pdb';
+var pdbInicial='1crn.pdb';

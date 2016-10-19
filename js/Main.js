@@ -122,6 +122,11 @@ function Main()
     }
     this.CleanScene=function()
     {
+        var newRotationMatrix = mat4.create();
+        mat4.identity(newRotationMatrix);
+            mat4.rotate(newRotationMatrix, degToRad(0), [0, 1, 0]); //vista frontal
+            mat4.identity(RotationMatrix);
+         mat4.multiply(newRotationMatrix, RotationMatrix, RotationMatrix);
         //tengo que limpiar los arreglos de los bloques wire
         for(var i=0; i<NBW; i++)
         {
