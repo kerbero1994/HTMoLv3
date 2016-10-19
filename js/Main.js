@@ -154,12 +154,16 @@ function Main()
         initCamera();
         if (RepresentacionInicial=='SpheresBonds') 
         {
-            initBuffersSpheres();
+            initBuffersSpheresSB();
             initBuffersBonds();
         }
         else if(RepresentacionInicial=='Bonds')
         {
             initBuffersBonds();
+        }
+        else if(RepresentacionInicial=='CPK')
+        {
+            initBuffersSpheresCPK();   
         }
 
         main.Buttons();
